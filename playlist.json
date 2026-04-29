@@ -1,0 +1,24 @@
+{
+  "songs": [
+    {
+      "id": 1,
+      "title": "Mi canción",
+      "artist": "Artista Ejemplo",
+      "album": "Álbum Uno",
+      "year": 2024,
+      "duration": "3:30",
+      "mp3": "songs/cancion1.mp3",
+      "cover": "songs/cover1.jpg"
+    },
+    {
+      "id": 2,
+      "title": "Segunda pista",
+      "artist": "Banda Demo",
+      "album": "EP Demo",
+      "year": 2023,
+      "duration": "2:45",
+      "mp3": "songs/cancion2.mp3",
+      "cover": "songs/cover2.jpg"
+    }
+  ]
+}
