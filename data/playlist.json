@@ -6,7 +6,7 @@
       "artist": "Tribi",
       "album": "La Traicion",
       "year": 2026,
-      "duration": "3:14",
+      "duration": "2:55",
       "mp3": "songs/cancion1.mp3",
       "cover": "songs/cover1.jpg"
     },
@@ -16,7 +16,7 @@
       "artist": " dvdsound",
       "album": "Dsv",
       "year": 2026,
-      "duration": "2:45",
+      "duration": "1:38",
       "mp3": "songs/cancion2.mp3",
       "cover": "songs/cover2.jpg"
     }
