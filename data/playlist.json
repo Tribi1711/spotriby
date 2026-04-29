@@ -12,10 +12,10 @@
     },
     {
       "id": 2,
-      "title": "Demo",
-      "artist": " Demo",
-      "album": "DSV Demo",
-      "year": 2023,
+      "title": "Tribi",
+      "artist": " dvdsound",
+      "album": "Dsv",
+      "year": 2026,
       "duration": "2:45",
       "mp3": "songs/cancion2.mp3",
       "cover": "songs/cover2.jpg"
