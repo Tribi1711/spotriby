@@ -13,12 +13,22 @@
     {
       "id": 2,
       "title": "Tribi",
-      "artist": " dvdsound",
+      "artist": "dvdsound",
       "album": "Dsv",
       "year": 2026,
       "duration": "1:38",
       "mp3": "songs/cancion2.mp3",
       "cover": "songs/cover2.jpg"
+    },
+    {
+      "id": 3,
+      "title": "Los Tetes Pa Siempre",
+      "artist": "Tribi",
+      "album": "No Traiciona",
+      "year": 2026,
+      "duration": "2:26",
+      "mp3": "songs/cancion3.mp3",
+      "cover": "songs/cover3.jpg"
     }
   ]
 }
