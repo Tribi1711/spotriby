@@ -39,6 +39,16 @@
       "duration": "2:34",
       "mp3": "songs/cancion4.mp3",
       "cover": "songs/cover4.jpg"
+    },
+    {
+      "id": 5,
+      "title": "ELLA",
+      "artist": "dvdsound",
+      "album": "Sencillo",
+      "year": 2026,
+      "duration": "1:39",
+      "mp3": "songs/cancion5.mp3",
+      "cover": "songs/cover5.jpg"
     }
   ]
 }
