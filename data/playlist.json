@@ -12,6 +12,26 @@
     },
     {
       "id": 2,
+      "title": "Roto Por Ti",
+      "artist": "Tribi",
+      "album": "Traicion",
+      "year": 2026,
+      "duration": "3:37",
+      "mp3": "songs/cancion6.mp3",
+      "cover": "songs/cover6.jpg"
+    },
+    {
+      "id": 3,
+      "title": "ELLA",
+      "artist": "dvdsound",
+      "album": "Sencillo",
+      "year": 2026,
+      "duration": "1:39",
+      "mp3": "songs/cancion5.mp3",
+      "cover": "songs/cover5.jpg"
+    },
+    {
+      "id": 4,
       "title": "Traicion",
       "artist": "Tribi",
       "album": "La Traicion",
@@ -21,7 +41,7 @@
       "cover": "songs/cover1.jpg"
     },
     {
-      "id": 3,
+      "id": 5,
       "title": "Tribi",
       "artist": "dvdsound",
       "album": "Dsv",
@@ -31,7 +51,7 @@
       "cover": "songs/cover2.jpg"
     },
     {
-      "id": 4,
+      "id": 6,
       "title": "Los Tetes Pa Siempre",
       "artist": "Tribi",
       "album": "No Traiciona",
@@ -39,16 +59,6 @@
       "duration": "2:26",
       "mp3": "songs/cancion3.mp3",
       "cover": "songs/cover3.jpg"
-    },
-    {
-      "id": 5,
-      "title": "ELLA",
-      "artist": "dvdsound",
-      "album": "Sencillo",
-      "year": 2026,
-      "duration": "1:39",
-      "mp3": "songs/cancion5.mp3",
-      "cover": "songs/cover5.jpg"
     }
   ]
 }
