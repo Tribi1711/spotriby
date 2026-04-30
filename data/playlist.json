@@ -2,6 +2,16 @@
   "songs": [
     {
       "id": 1,
+      "title": "Ya Me Cansé",
+      "artist": "Tribi",
+      "album": "Ya Me Cansé",
+      "year": 2026,
+      "duration": "2:34",
+      "mp3": "songs/cancion4.mp3",
+      "cover": "songs/cover4.jpg"
+    },
+    {
+      "id": 2,
       "title": "Traicion",
       "artist": "Tribi",
       "album": "La Traicion",
@@ -11,7 +21,7 @@
       "cover": "songs/cover1.jpg"
     },
     {
-      "id": 2,
+      "id": 3,
       "title": "Tribi",
       "artist": "dvdsound",
       "album": "Dsv",
@@ -21,7 +31,7 @@
       "cover": "songs/cover2.jpg"
     },
     {
-      "id": 3,
+      "id": 4,
       "title": "Los Tetes Pa Siempre",
       "artist": "Tribi",
       "album": "No Traiciona",
@@ -29,16 +39,6 @@
       "duration": "2:26",
       "mp3": "songs/cancion3.mp3",
       "cover": "songs/cover3.jpg"
-    },
-    {
-      "id": 4,
-      "title": "Ya Me Cansé",
-      "artist": "Tribi",
-      "album": "Ya Me Cansé",
-      "year": 2026,
-      "duration": "2:34",
-      "mp3": "songs/cancion4.mp3",
-      "cover": "songs/cover4.jpg"
     },
     {
       "id": 5,
