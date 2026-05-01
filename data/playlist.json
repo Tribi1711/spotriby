@@ -42,6 +42,16 @@
     },
     {
       "id": 5,
+      "title": "Estres",
+      "artist": "Tribi",
+      "album": "La Vida",
+      "year": 2026,
+      "duration": "2:59",
+      "mp3": "songs/cancion1.mp3",
+      "cover": "songs/cover1.jpg"
+    },
+    {
+      "id": 6,
       "title": "Los Tetes Pa Siempre",
       "artist": "Tribi",
       "album": "No Traiciona",
