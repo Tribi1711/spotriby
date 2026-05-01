@@ -1406,19 +1406,155 @@
   .home-song-card.active-card .home-card-title { color: var(--accent); }
   .home-song-card.active-card { box-shadow: 0 0 0 2px rgba(29,185,84,0.4); }
 
-  /* Mobile home */
+  /* =============================================
+     HOME SPOTIFY-STYLE - NUEVA PANTALLA INICIO
+  ============================================= */
+
+  /* Filtros de chips (Todo / Canciones / Álbumes) */
+  .home-filters {
+    display: flex;
+    gap: 8px;
+    padding: 20px 24px 12px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .home-filters::-webkit-scrollbar { display: none; }
+  .home-filter-btn {
+    background: var(--bg-card-hover);
+    color: var(--text-base);
+    border: none;
+    border-radius: 20px;
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: 700;
+    font-family: var(--font);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s, color 0.15s, transform 0.15s;
+    flex-shrink: 0;
+  }
+  .home-filter-btn:hover { background: #3e3e3e; transform: scale(1.04); }
+  .home-filter-btn.active { background: var(--accent); color: #000; }
+  .home-filter-btn:active { transform: scale(0.95); }
+
+  /* Grid 2 columnas de accesos rápidos (estilo Spotify) */
+  .home-quick-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    padding: 0 12px 8px;
+    animation: fadeSlideIn 0.3s ease both;
+  }
+  .quick-pill {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 6px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.15s;
+    height: 56px;
+    animation: cardEntrance 0.3s ease both;
+    position: relative;
+  }
+  .quick-pill::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 6px;
+    border: 1px solid rgba(255,255,255,0.05);
+    pointer-events: none;
+  }
+  .quick-pill:hover { background: rgba(255,255,255,0.14); transform: scale(1.02); }
+  .quick-pill:active { transform: scale(0.97); }
+  .quick-pill-cover {
+    width: 56px; height: 56px;
+    flex-shrink: 0;
+    background: var(--bg-card);
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 4px 0 0 4px;
+    overflow: hidden;
+  }
+  .quick-pill-cover img { width: 56px; height: 56px; object-fit: cover; }
+  .quick-pill-label {
+    font-size: 13px; font-weight: 700;
+    color: var(--text-base);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    padding-right: 8px;
+    flex: 1;
+  }
+
+  /* Now-playing banner */
+  .home-now-playing-bar {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 8px 12px 0;
+    background: linear-gradient(90deg, rgba(29,185,84,0.15) 0%, rgba(29,185,84,0.05) 100%);
+    border: 1px solid rgba(29,185,84,0.25);
+    border-radius: 12px;
+    padding: 14px 16px;
+    animation: fadeSlideIn 0.4s ease both;
+    overflow: hidden;
+  }
+  .hnp-cover {
+    width: 52px; height: 52px;
+    border-radius: 8px;
+    overflow: hidden;
+    flex-shrink: 0;
+    background: var(--bg-card);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .hnp-cover img { width: 52px; height: 52px; object-fit: cover; border-radius: 8px; }
+  .hnp-info { flex: 1; min-width: 0; }
+  .hnp-label {
+    font-size: 11px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.1em; color: var(--accent);
+    display: flex; align-items: center; gap: 6px;
+    margin-bottom: 2px;
+  }
+  .hnp-dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--accent);
+    animation: pulseGreen 1.5s ease-in-out infinite;
+    flex-shrink: 0;
+  }
+  .hnp-title {
+    font-size: 15px; font-weight: 800;
+    color: var(--text-base);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .hnp-artist {
+    font-size: 12px; color: var(--text-subdued);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .hnp-controls {
+    display: flex; align-items: center; gap: 6px;
+    flex-shrink: 0;
+  }
+  .hnp-play {
+    width: 44px !important; height: 44px !important;
+    box-shadow: 0 4px 16px rgba(29,185,84,0.4) !important;
+  }
+  .hnp-play:hover { transform: scale(1.08) !important; }
+
+  /* Vinilo animado en cards activos */
+  @keyframes vinylSpinCard {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  /* Mobile tweaks */
   @media (max-width: 768px) {
-    .hero-content { padding: 32px 16px 24px; flex-direction: column; align-items: center; text-align: center; gap: 20px; }
-    .hero-cover { width: 160px; height: 160px; }
-    .hero-vinyl { display: none; }
-    .hero-title { font-size: 28px; letter-spacing: -1px; }
-    .hero-artist { font-size: 15px; }
-    .hero-actions { justify-content: center; }
-    .home-hero { min-height: 420px; }
-    .home-section-header { padding: 0 16px; }
-    .home-cards-scroll { padding: 4px 16px 16px; }
-    .home-song-card { width: 140px; }
-    .home-card-cover { width: 108px; height: 108px; }
+    .home-filters { padding: 14px 12px 10px; }
+    .home-quick-grid { grid-template-columns: 1fr 1fr; gap: 6px; padding: 0 8px 8px; }
+    .home-now-playing-bar { margin: 8px 8px 0; }
+    .home-section-header { padding: 0 12px; }
+    .home-cards-scroll { padding: 4px 12px 16px; }
+    .home-song-card { width: 130px; }
+    .home-card-cover { width: 98px; height: 98px; }
   }
 </style>
 </head>
@@ -1499,77 +1635,73 @@
     <!-- ===== VISTA INICIO ===== -->
     <div id="view-inicio" class="view-panel active">
 
-      <!-- HERO - Canción actual destacada -->
-      <div class="home-hero" id="home-hero">
-        <div class="hero-bg-blur" id="hero-bg-blur"></div>
-        <div class="hero-particles" id="hero-particles"></div>
-        <div class="hero-content">
-          <div class="hero-cover-wrap">
-            <div class="hero-cover" id="hero-cover">
-              <div class="hero-cover-placeholder">
-                <svg width="80" height="80" fill="currentColor" viewBox="0 0 24 24" style="color:#3a3a3a"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
-              </div>
-            </div>
-            <div class="hero-vinyl" id="hero-vinyl">
-              <div class="hero-vinyl-inner"></div>
-            </div>
-          </div>
-          <div class="hero-info">
-            <div class="hero-label">Reproduciendo ahora</div>
-            <div class="hero-title" id="hero-title">Spotriby</div>
-            <div class="hero-artist" id="hero-artist">Tu música, tu mundo</div>
-            <div class="hero-album" id="hero-album"></div>
-            <div class="hero-actions">
-              <button class="btn-play-big hero-play-btn" id="btn-play-big" title="Reproducir">
-                <svg width="28" height="28" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5.14v14l11-7-11-7z"/></svg>
-              </button>
-              <button class="btn-icon hero-heart" id="btn-like-hero" title="Me gusta">
-                <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-              </button>
-              <button class="btn-shuffle ctrl-btn" id="btn-shuffle-main" title="Aleatorio" style="color:var(--text-subdued);font-size:0;width:40px;height:40px;">
-                <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41l-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z"/></svg>
-              </button>
-              <button class="btn-repeat ctrl-btn" id="btn-repeat-main" title="Repetir" style="color:var(--text-subdued);font-size:0;width:40px;height:40px;">
-                <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/></svg>
-              </button>
-            </div>
-          </div>
-        </div>
-        <!-- Visualizador de audio animado -->
-        <div class="audio-visualizer" id="audio-visualizer">
-          <div class="viz-bar"></div><div class="viz-bar"></div><div class="viz-bar"></div>
-          <div class="viz-bar"></div><div class="viz-bar"></div><div class="viz-bar"></div>
-          <div class="viz-bar"></div><div class="viz-bar"></div><div class="viz-bar"></div>
-          <div class="viz-bar"></div><div class="viz-bar"></div><div class="viz-bar"></div>
-          <div class="viz-bar"></div><div class="viz-bar"></div><div class="viz-bar"></div>
-          <div class="viz-bar"></div><div class="viz-bar"></div><div class="viz-bar"></div>
-          <div class="viz-bar"></div><div class="viz-bar"></div>
-        </div>
+      <!-- FILTROS RÁPIDOS estilo Spotify (Todo / Canciones / Álbumes) -->
+      <div class="home-filters" id="home-filters">
+        <button class="home-filter-btn active" onclick="setHomeFilter('todo',this)">Todo</button>
+        <button class="home-filter-btn" onclick="setHomeFilter('canciones',this)">Canciones</button>
+        <button class="home-filter-btn" onclick="setHomeFilter('albumes',this)">Álbumes</button>
       </div>
 
-      <!-- SECCIÓN: Escucha reciente / Canciones destacadas -->
-      <div class="home-sections">
+      <!-- ACCESOS RÁPIDOS tipo Spotify (2 columnas de pills) -->
+      <div class="home-quick-grid" id="home-quick-grid">
+        <!-- generado por JS -->
+      </div>
 
-        <!-- Destacados / Cards horizontales -->
-        <section class="home-section">
+      <!-- HERO invisible pero mantiene IDs necesarios -->
+      <div style="display:none">
+        <div id="hero-cover"></div>
+        <div id="hero-bg-blur"></div>
+        <div id="hero-particles"></div>
+        <div id="hero-vinyl"></div>
+        <div id="hero-title"></div>
+        <div id="hero-artist"></div>
+        <div id="hero-album"></div>
+        <div id="audio-visualizer"></div>
+        <button id="btn-like-hero"></button>
+      </div>
+
+      <!-- SECCIONES con cards -->
+      <div class="home-sections" id="home-sections-wrap">
+
+        <!-- Now Playing banner (si hay canción) -->
+        <div class="home-now-playing-bar" id="home-now-playing-bar" style="display:none">
+          <div class="hnp-cover" id="hnp-cover"></div>
+          <div class="hnp-info">
+            <div class="hnp-label">
+              <span class="hnp-dot"></span> Reproduciendo
+            </div>
+            <div class="hnp-title" id="hnp-title">—</div>
+            <div class="hnp-artist" id="hnp-artist">—</div>
+          </div>
+          <div class="hnp-controls">
+            <button class="ctrl-btn" id="btn-shuffle-main" title="Aleatorio">
+              <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41l-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z"/></svg>
+            </button>
+            <button class="btn-play-big hnp-play" id="btn-play-big" onclick="togglePlay()" title="Reproducir">
+              <svg width="22" height="22" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5.14v14l11-7-11-7z"/></svg>
+            </button>
+            <button class="ctrl-btn" id="btn-repeat-main" title="Repetir">
+              <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Sección canciones -->
+        <section class="home-section" id="home-sec-canciones">
           <div class="home-section-header">
-            <h2 class="home-section-title">Tu lista completa</h2>
+            <h2 class="home-section-title" id="home-sec-canciones-title">Canciones</h2>
             <span class="home-section-see-all" onclick="navigateTo('biblioteca')">Ver todo</span>
           </div>
-          <div class="home-cards-scroll" id="home-cards-scroll">
-            <!-- generado por JS -->
-          </div>
+          <div class="home-cards-scroll" id="home-cards-scroll"></div>
         </section>
 
-        <!-- Álbumes -->
-        <section class="home-section" id="home-albums-section" style="display:none">
+        <!-- Sección álbumes -->
+        <section class="home-section" id="home-sec-albumes">
           <div class="home-section-header">
             <h2 class="home-section-title">Álbumes</h2>
             <span class="home-section-see-all" onclick="navigateTo('biblioteca')">Ver todo</span>
           </div>
-          <div class="home-cards-scroll" id="home-albums-scroll">
-            <!-- generado por JS -->
-          </div>
+          <div class="home-cards-scroll" id="home-albums-scroll"></div>
         </section>
 
       </div>
@@ -1772,16 +1904,12 @@ const iconMuted   = document.getElementById('icon-muted');
 const npTitle     = document.getElementById('np-title');
 const npArtist    = document.getElementById('np-artist');
 const npCoverWrap = document.getElementById('np-cover-wrap');
-const mainTitle   = document.getElementById('main-title');
-const mainHeader  = document.getElementById('main-header');
-const mainCoverWrap = document.getElementById('main-cover-wrap');
-const mainSongCount = document.getElementById('main-song-count');
 const sidebarList = document.getElementById('sidebar-list');
 const songTableBody = document.getElementById('song-table-body');
 const searchInput = document.getElementById('search-input');
 const toast       = document.getElementById('toast');
 
-// New home elements
+// Home elements
 const heroCover   = document.getElementById('hero-cover');
 const heroTitle   = document.getElementById('hero-title');
 const heroArtist  = document.getElementById('hero-artist');
@@ -1790,12 +1918,6 @@ const heroVinyl   = document.getElementById('hero-vinyl');
 const heroBgBlur  = document.getElementById('hero-bg-blur');
 const audioViz    = document.getElementById('audio-visualizer');
 const btnLikeHero = document.getElementById('btn-like-hero');
-
-// Keep compatibility aliases
-const mainHeader    = document.getElementById('home-hero');
-const mainCoverWrap = heroCover;
-const mainTitle     = heroTitle;
-const mainSongCount = { textContent: '' }; // dummy
 
 /* =============================================
    CARGA DEL JSON
@@ -1886,8 +2008,9 @@ function renderSidebar(filter = '') {
   }).join('');
 }
 
-// Renderiza la tabla principal
+// Renderiza la tabla principal (usada en biblioteca > todas)
 function renderTable(filter = '') {
+  if (!songTableBody) return; // elemento puede no existir
   const filtered = songs.filter(s =>
     s.title.toLowerCase().includes(filter) ||
     s.artist.toLowerCase().includes(filter) ||
@@ -1937,15 +2060,17 @@ function updateMainHeader() {
     const song = songs[currentIndex];
 
     // Hero title/artist/album
-    heroTitle.textContent = song.title || 'Sin título';
-    heroArtist.textContent = song.artist || 'Artista desconocido';
-    heroAlbum.textContent = song.album || '';
+    if (heroTitle) heroTitle.textContent = song.title || 'Sin título';
+    if (heroArtist) heroArtist.textContent = song.artist || 'Artista desconocido';
+    if (heroAlbum) heroAlbum.textContent = song.album || '';
 
     // Cover
-    if (song.cover) {
-      heroCover.innerHTML = `<img src="${song.cover}" alt="${escapeHtml(song.title)}" style="width:100%;height:100%;object-fit:cover;display:block;" onerror="this.parentElement.innerHTML='<div class=hero-cover-placeholder><svg width=80 height=80 fill=currentColor viewBox=&quot;0 0 24 24&quot; style=color:#3a3a3a><path d=&quot;M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z&quot;/></svg></div>'">`;
-    } else {
-      heroCover.innerHTML = `<div class="hero-cover-placeholder"><svg width="80" height="80" fill="currentColor" viewBox="0 0 24 24" style="color:#3a3a3a"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg></div>`;
+    if (heroCover) {
+      if (song.cover) {
+        heroCover.innerHTML = `<img src="${song.cover}" alt="${escapeHtml(song.title)}" style="width:100%;height:100%;object-fit:cover;display:block;" onerror="this.parentElement.innerHTML='<div class=hero-cover-placeholder><svg width=80 height=80 fill=currentColor viewBox=&quot;0 0 24 24&quot; style=color:#3a3a3a><path d=&quot;M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z&quot;/></svg></div>'">`;
+      } else {
+        heroCover.innerHTML = `<div class="hero-cover-placeholder"><svg width="80" height="80" fill="currentColor" viewBox="0 0 24 24" style="color:#3a3a3a"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg></div>`;
+      }
     }
 
     // Background gradient from song index
@@ -1955,7 +2080,7 @@ function updateMainHeader() {
       ['#1a2e0a','#2e0a1f'],['#0a0a2e','#2e1a1a']
     ];
     const [c1, c2] = gradients[currentIndex % gradients.length];
-    heroBgBlur.style.background = `linear-gradient(135deg, ${c1} 0%, ${c2} 60%, #0a0a0a 100%)`;
+    if (heroBgBlur) heroBgBlur.style.background = `linear-gradient(135deg, ${c1} 0%, ${c2} 60%, #0a0a0a 100%)`;
 
     // Hero like btn
     updateHeroLike();
