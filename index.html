@@ -65,17 +65,17 @@
   #app {
     display: grid;
     grid-template-areas:
-      "sidebar topbar topbar"
-      "sidebar main   nowpanel"
-      "player  player player";
-    grid-template-columns: var(--sidebar-w) 1fr 0px;
+      "topbar topbar"
+      "main   nowpanel"
+      "player player";
+    grid-template-columns: 1fr 0px;
     grid-template-rows: var(--nav-height) 1fr var(--player-height);
     height: 100vh;
     overflow: hidden;
     transition: grid-template-columns 0.35s cubic-bezier(0.4,0,0.2,1);
   }
   #app.show-nowpanel {
-    grid-template-columns: var(--sidebar-w) 1fr 320px;
+    grid-template-columns: 1fr 320px;
   }
 
   /* =============================================
@@ -169,6 +169,7 @@
      SIDEBAR
   ============================================= */
   #sidebar {
+    display: none !important;
     grid-area: sidebar;
     background: var(--bg-sidebar);
     display: flex;
@@ -1471,7 +1472,7 @@
   /* =============================================
      MOBILE RESPONSIVE
   ============================================= */
-  .hamburger {
+  .hamburger { display: none !important;
     display: none;
     background: none; border: none;
     color: var(--text-base);
@@ -1507,8 +1508,8 @@
       transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
     }
     #sidebar.open { transform: translateX(0); }
-    .hamburger { display: flex; align-items: center; }
-    .sidebar-overlay {
+    .hamburger { display: none !important; display: flex; align-items: center; }
+    .sidebar-overlay { display: none !important;
       display: none;
       position: fixed;
       inset: 0;
