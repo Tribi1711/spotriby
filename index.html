@@ -62,24 +62,16 @@
   /* =============================================
      LAYOUT PRINCIPAL
   ============================================= */
-  :root {
-    --np-panel-w: 0px; /* becomes 320px when panel open */
-  }
-
   #app {
     display: grid;
     grid-template-areas:
-      "sidebar topbar  nppanel"
-      "sidebar main    nppanel"
-      "player  player  player";
-    grid-template-columns: var(--sidebar-w) 1fr var(--np-panel-w);
+      "sidebar topbar"
+      "sidebar main"
+      "player  player";
+    grid-template-columns: var(--sidebar-w) 1fr;
     grid-template-rows: var(--nav-height) 1fr var(--player-height);
     height: 100vh;
     overflow: hidden;
-    transition: grid-template-columns 0.38s cubic-bezier(0.4,0,0.2,1);
-  }
-  #app.panel-open {
-    --np-panel-w: 320px;
   }
 
   /* =============================================
@@ -1566,65 +1558,41 @@
   }
 
   /* =============================================
-     NOW PLAYING PANEL (docked, acoplado al grid)
+     NOW PLAYING PANEL (escritorio - derecha)
   ============================================= */
   #now-playing-panel {
-    grid-area: nppanel;
-    background: #0a0a0a;
-    border-left: 1px solid rgba(255,255,255,0.06);
-    display: flex;
+    display: none;
+    position: fixed;
+    top: 0; right: 0;
+    width: 340px;
+    height: calc(100vh - var(--player-height));
+    background: var(--bg-elevated);
+    border-left: 1px solid rgba(255,255,255,0.08);
+    z-index: 50;
     flex-direction: column;
     overflow: hidden;
-    width: 0;
-    min-width: 0;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.35s ease, width 0.38s cubic-bezier(0.4,0,0.2,1);
-    position: relative;
+    transform: translateX(100%);
+    transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
   }
-  #app.panel-open #now-playing-panel {
-    width: 320px;
-    min-width: 320px;
-    opacity: 1;
-    pointer-events: all;
-  }
-  /* NP panel inner content slides in */
-  #now-playing-panel > * {
-    min-width: 320px;
+  #now-playing-panel.open {
+    display: flex;
+    transform: translateX(0);
+    animation: npPanelIn 0.4s cubic-bezier(0.34,1.56,0.64,1) both;
   }
   @keyframes npPanelIn {
-    from { opacity: 0; transform: translateX(24px); }
+    from { opacity: 0; transform: translateX(60px); }
     to { opacity: 1; transform: translateX(0); }
-  }
-  #app.panel-open #now-playing-panel .np-panel-inner {
-    animation: npPanelIn 0.4s cubic-bezier(0.34,1.56,0.64,1) 0.05s both;
-  }
-
-  .np-panel-inner {
-    display: flex; flex-direction: column;
-    height: 100%; overflow-y: auto; overflow-x: hidden;
-    scrollbar-width: none;
-  }
-  .np-panel-inner::-webkit-scrollbar { display: none; }
-
-  /* Ambient background glow in panel */
-  .np-panel-ambient {
-    position: absolute; inset: 0; z-index: 0;
-    opacity: 0.12;
-    transition: background 1.5s ease;
-    pointer-events: none;
   }
 
   .np-panel-header {
     display: flex; align-items: center; justify-content: space-between;
     padding: 20px 20px 12px;
-    border-bottom: 1px solid rgba(255,255,255,0.05);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
     flex-shrink: 0;
-    position: relative; z-index: 1;
   }
   .np-panel-title {
-    font-size: 12px; font-weight: 700; color: var(--text-subdued);
-    text-transform: uppercase; letter-spacing: 0.12em;
+    font-size: 13px; font-weight: 700; color: var(--text-subdued);
+    text-transform: uppercase; letter-spacing: 0.1em;
   }
   .np-panel-close {
     background: none; border: none; cursor: pointer;
@@ -1636,23 +1604,18 @@
   .np-panel-close:hover { color: var(--text-base); background: rgba(255,255,255,0.08); }
 
   .np-panel-cover-wrap {
-    padding: 20px 20px 12px;
+    padding: 24px 24px 16px;
     flex-shrink: 0;
-    position: relative; z-index: 1;
   }
   .np-panel-cover {
     width: 100%;
     aspect-ratio: 1;
-    border-radius: 14px;
+    border-radius: 12px;
     object-fit: cover;
     background: var(--bg-card);
     display: block;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.04);
-    transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.4s ease;
-  }
-  .np-panel-cover.playing {
-    transform: scale(1.03);
-    box-shadow: 0 24px 72px rgba(0,0,0,0.9), 0 0 0 1px rgba(29,185,84,0.15);
+    box-shadow: 0 24px 64px rgba(0,0,0,0.7);
+    animation: npCoverIn 0.5s cubic-bezier(0.34,1.56,0.64,1) both;
   }
   @keyframes npCoverIn {
     from { opacity: 0; transform: scale(0.88) translateY(20px); }
@@ -1660,98 +1623,63 @@
   }
   .np-panel-cover-placeholder {
     width: 100%; aspect-ratio: 1;
-    border-radius: 14px;
+    border-radius: 12px;
     background: var(--bg-card);
     display: flex; align-items: center; justify-content: center;
     color: var(--text-subdued);
-    box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+    box-shadow: 0 24px 64px rgba(0,0,0,0.7);
   }
 
   .np-panel-info {
-    padding: 0 20px 4px;
+    padding: 0 24px;
     flex-shrink: 0;
-    position: relative; z-index: 1;
+    animation: fadeSlideIn 0.4s ease 0.1s both;
   }
   .np-panel-song-title {
-    font-size: 20px; font-weight: 800;
+    font-size: 22px; font-weight: 800;
     color: var(--text-base);
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    margin-bottom: 3px;
+    margin-bottom: 4px;
     letter-spacing: -0.3px;
   }
   .np-panel-song-artist {
-    font-size: 13px; color: var(--text-subdued);
+    font-size: 14px; color: var(--text-subdued);
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   }
 
   .np-panel-like-row {
     display: flex; align-items: center; justify-content: space-between;
-    padding: 10px 20px;
+    padding: 12px 24px;
     flex-shrink: 0;
-    position: relative; z-index: 1;
   }
 
   .np-panel-progress {
-    padding: 0 20px;
+    padding: 0 24px;
     flex-shrink: 0;
-    position: relative; z-index: 1;
+    animation: fadeSlideIn 0.4s ease 0.15s both;
   }
   .np-panel-progress .progress-row { gap: 10px; }
-  .np-panel-progress .time-label { font-size: 11px; min-width: 34px; }
+  .np-panel-progress .time-label { font-size: 12px; min-width: 36px; }
 
   .np-panel-controls {
-    padding: 12px 20px;
+    padding: 16px 24px;
     flex-shrink: 0;
-    position: relative; z-index: 1;
+    animation: fadeSlideIn 0.4s ease 0.2s both;
   }
-  .np-panel-controls .controls-btns { justify-content: center; gap: 12px; }
-  .np-panel-controls .ctrl-btn { width: 38px; height: 38px; }
-  .np-panel-controls .ctrl-btn-main { width: 48px !important; height: 48px !important; }
-  .np-panel-controls .ctrl-btn-main svg { width: 22px; height: 22px; }
+  .np-panel-controls .controls-btns { justify-content: center; gap: 16px; }
+  .np-panel-controls .ctrl-btn { width: 40px; height: 40px; }
+  .np-panel-controls .ctrl-btn-main { width: 52px; height: 52px; }
+  .np-panel-controls .ctrl-btn-main svg { width: 24px; height: 24px; }
 
   .np-panel-vol {
-    padding: 0 20px 16px;
+    padding: 0 24px 20px;
     flex-shrink: 0;
-    position: relative; z-index: 1;
+    animation: fadeSlideIn 0.4s ease 0.25s both;
   }
   .np-panel-vol .volume-ctrl { min-width: unset; width: 100%; }
+  .np-panel-vol #volume-panel { flex: 1; }
 
-  /* Queue / upcoming section */
-  .np-panel-queue {
-    padding: 12px 20px 4px;
-    border-top: 1px solid rgba(255,255,255,0.06);
-    flex-shrink: 0;
-    position: relative; z-index: 1;
-  }
-  .np-queue-title {
-    font-size: 11px; font-weight: 700; color: var(--text-subdued);
-    text-transform: uppercase; letter-spacing: 0.1em;
-    margin-bottom: 10px;
-  }
-  .np-queue-item {
-    display: flex; align-items: center; gap: 10px;
-    padding: 6px 0;
-    cursor: pointer;
-    border-radius: 6px;
-    transition: background 0.15s;
-  }
-  .np-queue-item:hover { background: rgba(255,255,255,0.05); padding-left: 6px; padding-right: 6px; margin: 0 -6px; }
-  .np-queue-cover {
-    width: 36px; height: 36px; border-radius: 4px; object-fit: cover;
-    background: var(--bg-card); flex-shrink: 0;
-  }
-  .np-queue-info { flex: 1; min-width: 0; }
-  .np-queue-title-text {
-    font-size: 13px; font-weight: 500;
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    color: var(--text-base);
-  }
-  .np-queue-artist-text {
-    font-size: 11px; color: var(--text-subdued);
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-  }
-
-  /* Btn to toggle NP panel */
+  /* Btn to open NP panel in player bar */
   #btn-open-np-panel {
     background: none; border: none; cursor: pointer;
     color: var(--text-subdued);
@@ -1763,9 +1691,19 @@
   #btn-open-np-panel:hover { color: var(--text-base); background: rgba(255,255,255,0.07); }
   #btn-open-np-panel.active { color: var(--accent); }
 
-  /* Desktop: panel is docked, not overlay */
-  @media (max-width: 768px) {
-    #now-playing-panel { display: none !important; }
+  /* Adjust main when panel is open on desktop */
+  @media (min-width: 769px) {
+    #app.panel-open #main {
+      transition: margin-right 0.4s cubic-bezier(0.34,1.56,0.64,1);
+      margin-right: 340px;
+    }
+    #now-playing-panel {
+      display: flex;
+    }
+    #now-playing-panel:not(.open) {
+      transform: translateX(100%);
+      pointer-events: none;
+    }
   }
 
   /* =============================================
@@ -2073,16 +2011,6 @@
     <!-- ===== VISTA INICIO ===== -->
     <div id="view-inicio" class="view-panel active">
 
-      <!-- GREETING HEADER -->
-      <div class="home-greeting-bar" id="home-greeting-bar">
-        <div class="home-greeting-text" id="home-greeting-text">Buenas tardes</div>
-        <div class="home-greeting-actions">
-          <button class="home-greeting-btn" onclick="playSong(0)" title="Reproducir todo">
-            <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5.14v14l11-7-11-7z"/></svg>
-          </button>
-        </div>
-      </div>
-
       <!-- FILTROS RÁPIDOS estilo Spotify (Todo / Canciones / Álbumes) -->
       <div class="home-filters" id="home-filters">
         <button class="home-filter-btn active" onclick="setHomeFilter('todo',this)">Todo</button>
@@ -2150,14 +2078,6 @@
             <span class="home-section-see-all" onclick="navigateTo('biblioteca')">Ver todo</span>
           </div>
           <div class="home-cards-scroll" id="home-albums-scroll"></div>
-        </section>
-
-        <!-- Sección recientes -->
-        <section class="home-section" id="home-sec-recientes" style="display:none">
-          <div class="home-section-header">
-            <h2 class="home-section-title">Escuchado recientemente</h2>
-          </div>
-          <div class="home-cards-scroll" id="home-recent-scroll"></div>
         </section>
 
       </div>
@@ -2323,14 +2243,12 @@
 
 </div><!-- /#app -->
 
-<!-- ========== NOW PLAYING PANEL (docked desktop) ========== -->
+<!-- ========== NOW PLAYING PANEL (desktop) ========== -->
 <div id="now-playing-panel">
-  <div class="np-panel-ambient" id="np-panel-ambient"></div>
-  <div class="np-panel-inner">
   <div class="np-panel-header">
     <span class="np-panel-title">Reproduciendo ahora</span>
     <button class="np-panel-close" onclick="closeNPPanel()" title="Cerrar">
-      <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+      <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
     </button>
   </div>
   <div class="np-panel-cover-wrap">
@@ -2347,7 +2265,7 @@
       <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
     </button>
     <button class="ctrl-btn" id="btn-repeat-panel" title="Repetir" onclick="cycleRepeat()">
-      <svg width="17" height="17" fill="currentColor" viewBox="0 0 24 24"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/></svg>
+      <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/></svg>
     </button>
   </div>
   <div class="np-panel-progress">
@@ -2360,38 +2278,32 @@
   <div class="np-panel-controls">
     <div class="controls-btns">
       <button class="ctrl-btn" id="btn-shuffle-panel" title="Aleatorio" onclick="toggleShuffle()">
-        <svg width="17" height="17" fill="currentColor" viewBox="0 0 24 24"><path d="M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41l-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z"/></svg>
+        <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41l-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z"/></svg>
       </button>
       <button class="ctrl-btn" onclick="prevSong()" title="Anterior">
         <svg width="22" height="22" fill="currentColor" viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
       </button>
       <button class="ctrl-btn ctrl-btn-main" id="btn-play-panel" onclick="togglePlay()" title="Reproducir">
-        <svg id="np-panel-icon-play" width="22" height="22" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5.14v14l11-7-11-7z"/></svg>
-        <svg id="np-panel-icon-pause" width="22" height="22" fill="currentColor" viewBox="0 0 24 24" style="display:none"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+        <svg id="np-panel-icon-play" width="24" height="24" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5.14v14l11-7-11-7z"/></svg>
+        <svg id="np-panel-icon-pause" width="24" height="24" fill="currentColor" viewBox="0 0 24 24" style="display:none"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
       </button>
       <button class="ctrl-btn" onclick="nextSong()" title="Siguiente">
         <svg width="22" height="22" fill="currentColor" viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zm2-8.14L11.03 12 8 14.14V9.86zM16 6h2v12h-2z"/></svg>
       </button>
       <button class="ctrl-btn" onclick="cycleRepeat()" title="Repetir">
-        <svg width="17" height="17" fill="currentColor" viewBox="0 0 24 24"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/></svg>
+        <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/></svg>
       </button>
     </div>
   </div>
   <div class="np-panel-vol">
-    <div class="volume-ctrl" style="width:100%">
+    <div class="volume-ctrl">
       <button class="vol-icon" onclick="toggleMute()" title="Silenciar">
         <svg id="icon-vol-panel" width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
         <svg id="icon-muted-panel" width="16" height="16" fill="currentColor" viewBox="0 0 24 24" style="display:none"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/></svg>
       </button>
-      <input type="range" id="volume-panel" min="0" max="100" value="100" step="1" style="flex:1">
+      <input type="range" id="volume-panel" min="0" max="100" value="100" step="1">
     </div>
   </div>
-  <!-- Cola / siguiente -->
-  <div class="np-panel-queue">
-    <div class="np-queue-title">A continuación</div>
-    <div id="np-queue-list"></div>
-  </div>
-  </div><!-- /np-panel-inner -->
 </div>
 
 <!-- ========== MOBILE FULLSCREEN PLAYER ========== -->
