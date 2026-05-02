@@ -68,14 +68,14 @@
       "sidebar topbar topbar"
       "sidebar main   nowpanel"
       "player  player player";
-    grid-template-columns: var(--sidebar-w) 1fr var(--nowpanel-w, 0px);
+    grid-template-columns: var(--sidebar-w) 1fr 0px;
     grid-template-rows: var(--nav-height) 1fr var(--player-height);
     height: 100vh;
     overflow: hidden;
     transition: grid-template-columns 0.35s cubic-bezier(0.4,0,0.2,1);
   }
   #app.show-nowpanel {
-    --nowpanel-w: 320px;
+    grid-template-columns: var(--sidebar-w) 1fr 320px;
   }
 
   /* =============================================
@@ -995,7 +995,6 @@
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.35s ease;
-    min-width: 0;
   }
   #app.show-nowpanel #nowpanel {
     opacity: 1;
