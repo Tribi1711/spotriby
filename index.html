@@ -72,7 +72,7 @@
     grid-template-rows: var(--nav-height) 1fr var(--player-height);
     height: 100vh;
     overflow: hidden;
-    transition: grid-template-columns 0.35s cubic-bezier(0.4,0,0.2,1);
+    transition: grid-template-columns 0.4s cubic-bezier(0.4,0,0.2,1);
   }
   #app.show-nowpanel {
     grid-template-columns: var(--sidebar-w) 1fr 320px;
@@ -359,7 +359,10 @@
     animation: logoWave 0.8s ease-in-out, logoGlow 0.8s ease-in-out;
   }
   .sidebar-logo span {
-    font-size: 20px; font-weight: 800; letter-spacing: -0.5px; color: #FFFFFF;
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    color: #FFFFFF;
   }
   .sidebar-logo span em { font-style: normal; color: var(--accent); }
 
@@ -987,11 +990,13 @@
     flex-direction: column;
     opacity: 0;
     pointer-events: none;
-    transition: opacity 0.35s ease;
+    transform: translateX(40px);
+    transition: opacity 0.4s cubic-bezier(0.4,0,0.2,1), transform 0.4s cubic-bezier(0.4,0,0.2,1);
   }
   #app.show-nowpanel #nowpanel {
     opacity: 1;
     pointer-events: all;
+    transform: translateX(0);
   }
   .np-panel-inner {
     width: 100%;
@@ -1971,74 +1976,6 @@
     .home-song-card { width: 130px; }
     .home-card-cover { width: 98px; height: 98px; }
   }
-
-  /* === SIDEBAR NOW PLAYING WIDGET === */
-  .sidebar-np-widget {
-    flex-shrink: 0; margin: 0 8px 8px;
-    border-radius: 10px; overflow: hidden;
-    background: var(--bg-card);
-    border: 1px solid rgba(255,255,255,0.06);
-    display: none; flex-direction: column;
-  }
-  .sidebar-np-widget.visible { display: flex; }
-  .sidebar-np-cover-wrap {
-    position: relative; width: 100%; aspect-ratio: 1; overflow: hidden;
-    background: var(--bg-highlight);
-  }
-  .sidebar-np-cover-wrap img { width:100%; height:100%; object-fit:cover; display:block; }
-  .sidebar-np-cover-placeholder {
-    width:100%; height:100%; display:flex; align-items:center; justify-content:center;
-    background: var(--bg-highlight); color: var(--text-subdued);
-  }
-  .sidebar-np-badge {
-    position:absolute; top:10px; left:10px;
-    background:rgba(0,0,0,0.7); backdrop-filter:blur(8px);
-    border-radius:20px; padding:4px 10px;
-    display:flex; align-items:center; gap:6px;
-    font-size:11px; font-weight:700; color:var(--accent);
-    letter-spacing:0.05em; text-transform:uppercase;
-  }
-  .sidebar-np-info { padding:12px 14px 4px; }
-  .sidebar-np-title {
-    font-size:14px; font-weight:700; color:var(--text-base);
-    white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-bottom:2px;
-  }
-  .sidebar-np-artist {
-    font-size:12px; color:var(--text-subdued);
-    white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-bottom:4px;
-  }
-  .sidebar-np-controls {
-    display:flex; align-items:center; justify-content:space-between; padding:4px 10px 10px;
-  }
-  .snp-btn {
-    background:none; border:none; cursor:pointer; color:var(--text-subdued);
-    display:flex; align-items:center; justify-content:center;
-    width:32px; height:32px; border-radius:50%;
-    transition:color 0.15s, background 0.15s;
-  }
-  .snp-btn:hover { color:var(--text-base); background:rgba(255,255,255,0.08); }
-  .snp-btn.active { color:var(--accent); }
-  .snp-play-btn {
-    width:40px; height:40px; background:var(--accent);
-    border:none; border-radius:50%; cursor:pointer;
-    display:flex; align-items:center; justify-content:center; color:#000;
-    transition:transform 0.1s, background 0.15s;
-    box-shadow:0 4px 16px rgba(29,185,84,0.4);
-  }
-  .snp-play-btn:hover { background:var(--accent-hover); transform:scale(1.06); }
-  .snp-play-btn:active { transform:scale(0.94); }
-  .sidebar-np-progress {
-    height:3px; background:var(--bg-progress);
-    margin:0 14px 6px; border-radius:2px; overflow:hidden; cursor:pointer;
-  }
-  .sidebar-np-progress-fill {
-    height:100%; background:var(--accent); border-radius:2px; width:0%;
-    transition:width 0.5s linear;
-  }
-  .sidebar-np-times {
-    display:flex; justify-content:space-between;
-    padding:0 14px 10px; font-size:10px; color:var(--text-subdued);
-  }
 </style>
 </head>
 <body>
@@ -2086,44 +2023,6 @@
     <div class="playlist-list" id="sidebar-list">
       <div class="empty-state" style="padding:40px 16px;">
         <p>Cargando canciones...</p>
-      </div>
-    </div>
-
-    <!-- Sidebar Now Playing Widget -->
-    <div class="sidebar-np-widget" id="sidebar-np-widget">
-      <div class="sidebar-np-cover-wrap" id="snp-cover-wrap">
-        <div class="sidebar-np-cover-placeholder">
-          <svg width="64" height="64" fill="currentColor" viewBox="0 0 24 24" style="color:#3a3a3a"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
-        </div>
-      </div>
-      <div class="sidebar-np-info">
-        <div class="sidebar-np-title" id="snp-title">Sin reproducir</div>
-        <div class="sidebar-np-artist" id="snp-artist">—</div>
-      </div>
-      <div class="sidebar-np-controls">
-        <button class="snp-btn" id="snp-shuffle-btn" onclick="toggleShuffle()" title="Aleatorio">
-          <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41l-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z"/></svg>
-        </button>
-        <button class="snp-btn" onclick="prevSong()" title="Anterior">
-          <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
-        </button>
-        <button class="snp-play-btn" id="snp-play-btn" onclick="togglePlay()" title="Reproducir/Pausar">
-          <svg id="snp-icon-play" width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5.14v14l11-7-11-7z"/></svg>
-          <svg id="snp-icon-pause" width="20" height="20" fill="currentColor" viewBox="0 0 24 24" style="display:none"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
-        </button>
-        <button class="snp-btn" onclick="nextSong()" title="Siguiente">
-          <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6h2v12h-2z"/></svg>
-        </button>
-        <button class="snp-btn" id="snp-like-btn" onclick="toggleLikeFromPanel()" title="Me gusta">
-          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-        </button>
-      </div>
-      <div class="sidebar-np-progress" id="snp-progress-bar" onclick="snpSeek(event)">
-        <div class="sidebar-np-progress-fill" id="snp-progress-fill"></div>
-      </div>
-      <div class="sidebar-np-times">
-        <span id="snp-time-cur">0:00</span>
-        <span id="snp-time-dur">0:00</span>
       </div>
     </div>
   </aside>
@@ -2966,7 +2865,6 @@ function playSong(index) {
       updateNowPanel();
       updateMobileFullPlayer();
       updateHomeNowPlaying();
-      updateSidebarNowPlaying();
       // Auto-abrir panel derecho en escritorio
       if (window.innerWidth > 768 && !nowPanelOpen) {
         nowPanelOpen = true;
@@ -3012,7 +2910,6 @@ function togglePlay() {
   updatePlayIcon();
   updateActiveStates();
   updateVinylState();
-  updateSidebarNowPlaying();
 }
 
 function prevSong() {
@@ -3934,75 +3831,6 @@ document.getElementById('search-main-input').addEventListener('input', function(
       </div>`;
     }).join('')}
   </div>`;
-});
-
-
-/* === SIDEBAR NOW PLAYING WIDGET JS === */
-function updateSidebarNowPlaying() {
-  const widget = document.getElementById('sidebar-np-widget');
-  if (!widget) return;
-  if (currentIndex < 0) { widget.classList.remove('visible'); return; }
-  widget.classList.add('visible');
-
-  const song = songs[currentIndex];
-  const coverWrap = document.getElementById('snp-cover-wrap');
-  const titleEl = document.getElementById('snp-title');
-  const artistEl = document.getElementById('snp-artist');
-  const iconPlay = document.getElementById('snp-icon-play');
-  const iconPause = document.getElementById('snp-icon-pause');
-  const likeBtn = document.getElementById('snp-like-btn');
-  const shuffleBtn = document.getElementById('snp-shuffle-btn');
-
-  if (titleEl) titleEl.textContent = song.title || '—';
-  if (artistEl) artistEl.textContent = (song.artist || '—') + (song.album ? ' · ' + song.album : '');
-
-  if (coverWrap) {
-    const badgeHtml = isPlaying
-      ? '<div class="sidebar-np-badge"><div class="playing-bars" style="height:10px"><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>Reproduciendo</div>'
-      : '';
-    if (song.cover) {
-      coverWrap.innerHTML = '<img src="' + song.cover + '" alt="">' + badgeHtml;
-    } else {
-      coverWrap.innerHTML = '<div class="sidebar-np-cover-placeholder"><svg width="64" height="64" fill="currentColor" viewBox="0 0 24 24" style="color:#3a3a3a"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg></div>' + badgeHtml;
-    }
-  }
-
-  if (iconPlay) iconPlay.style.display = isPlaying ? 'none' : 'block';
-  if (iconPause) iconPause.style.display = isPlaying ? 'block' : 'none';
-
-  if (likeBtn) {
-    const liked = likedSongs.has(currentIndex);
-    likeBtn.classList.toggle('active', liked);
-    likeBtn.innerHTML = liked
-      ? '<svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.593c-5.63-5.539-11-10.297-11-14.402 0-3.791 3.068-5.191 5.281-5.191 1.312 0 4.151.501 5.719 4.457 1.59-3.968 4.464-4.447 5.726-4.447 2.54 0 5.274 1.621 5.274 5.181 0 4.069-5.136 8.625-11 14.402z"/></svg>'
-      : '<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>';
-  }
-
-  if (shuffleBtn) shuffleBtn.classList.toggle('active', typeof isShuffle !== 'undefined' && isShuffle);
-}
-
-function snpSeek(e) {
-  const bar = document.getElementById('snp-progress-bar');
-  if (!bar || !audio.duration) return;
-  const rect = bar.getBoundingClientRect();
-  const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
-  audio.currentTime = pct * audio.duration;
-}
-
-function formatTime(s) {
-  if (!s || isNaN(s)) return '0:00';
-  const m = Math.floor(s / 60);
-  const sec = Math.floor(s % 60);
-  return m + ':' + (sec < 10 ? '0' : '') + sec;
-}
-
-audio.addEventListener('timeupdate', function() {
-  const fill = document.getElementById('snp-progress-fill');
-  const cur = document.getElementById('snp-time-cur');
-  const dur = document.getElementById('snp-time-dur');
-  if (fill && audio.duration) fill.style.width = ((audio.currentTime / audio.duration) * 100) + '%';
-  if (cur) cur.textContent = formatTime(audio.currentTime);
-  if (dur && audio.duration) dur.textContent = formatTime(audio.duration);
 });
 
 loadVolume();
