@@ -72,7 +72,7 @@
     grid-template-rows: var(--nav-height) 1fr var(--player-height);
     height: 100vh;
     overflow: hidden;
-    transition: grid-template-columns 0.4s cubic-bezier(0.4,0,0.2,1);
+    transition: grid-template-columns 0.35s cubic-bezier(0.4,0,0.2,1);
   }
   #app.show-nowpanel {
     grid-template-columns: var(--sidebar-w) 1fr 320px;
@@ -359,10 +359,7 @@
     animation: logoWave 0.8s ease-in-out, logoGlow 0.8s ease-in-out;
   }
   .sidebar-logo span {
-    font-size: 20px;
-    font-weight: 800;
-    letter-spacing: -0.5px;
-    color: #FFFFFF;
+    font-size: 20px; font-weight: 800; letter-spacing: -0.5px; color: #FFFFFF;
   }
   .sidebar-logo span em { font-style: normal; color: var(--accent); }
 
@@ -979,202 +976,266 @@
   #volume:hover::-webkit-slider-thumb { opacity: 1; }
 
   /* =============================================
-     NOW PLAYING PANEL (desktop derecha)
+     NOW PLAYING PANEL — nuevo estilo Spotify
   ============================================= */
   #nowpanel {
     grid-area: nowpanel;
-    background: var(--bg-sidebar);
-    border-left: 1px solid rgba(255,255,255,0.06);
     overflow: hidden;
     display: flex;
     flex-direction: column;
     opacity: 0;
     pointer-events: none;
-    transform: translateX(40px);
-    transition: opacity 0.4s cubic-bezier(0.4,0,0.2,1), transform 0.4s cubic-bezier(0.4,0,0.2,1);
+    transform: translateX(32px);
+    transition: opacity 0.38s cubic-bezier(.4,0,.2,1),
+                transform 0.38s cubic-bezier(.4,0,.2,1);
+    position: relative;
+    background: #121212;
   }
   #app.show-nowpanel #nowpanel {
     opacity: 1;
     pointer-events: all;
     transform: translateX(0);
   }
-  .np-panel-inner {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    overflow-y: auto;
-    overflow-x: hidden;
+
+  /* Dynamic blurred background */
+  .npp-bg {
+    position: absolute; inset: 0; z-index: 0;
+    background: linear-gradient(180deg, #1a3a2a 0%, #121212 55%);
+    transition: background 0.8s ease;
+  }
+  .npp-bg::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(180deg, rgba(0,0,0,0) 40%, #121212 100%);
+  }
+
+  /* Scrollable inner */
+  .npp-inner {
+    position: relative; z-index: 1;
+    width: 100%; height: 100%;
+    display: flex; flex-direction: column;
+    overflow-y: auto; overflow-x: hidden;
     scrollbar-width: thin;
-    scrollbar-color: var(--scrollbar) transparent;
+    scrollbar-color: rgba(255,255,255,0.15) transparent;
+    padding-bottom: 16px;
   }
-  .np-panel-header {
-    padding: 16px 20px 8px;
+  .npp-inner::-webkit-scrollbar { width: 4px; }
+  .npp-inner::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 2px; }
+
+  /* Header row */
+  .npp-header {
     display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 16px 10px;
     flex-shrink: 0;
   }
-  .np-panel-title {
+  .npp-header-title {
     font-size: 13px; font-weight: 700;
-    text-transform: uppercase; letter-spacing: 0.08em;
-    color: var(--text-subdued);
-  }
-  .np-panel-close {
-    background: none; border: none; cursor: pointer;
-    color: var(--text-subdued);
-    transition: color 0.2s;
-    display: flex; align-items: center;
-  }
-  .np-panel-close:hover { color: var(--text-base); }
-  .np-panel-cover-wrap {
-    position: relative;
-    padding: 16px 24px 0;
-    flex-shrink: 0;
-  }
-  .np-panel-cover {
-    width: 100%;
-    aspect-ratio: 1;
-    border-radius: 12px;
-    overflow: hidden;
-    background: var(--bg-card);
-    box-shadow: 0 16px 48px rgba(0,0,0,0.6);
-    position: relative;
-  }
-  .np-panel-cover img {
-    width: 100%; height: 100%;
-    object-fit: cover;
-    display: block;
-    transition: transform 0.4s ease;
-  }
-  #app.show-nowpanel .np-panel-cover img { transform: scale(1.0); }
-  .np-panel-cover-placeholder {
-    width: 100%; height: 100%;
-    background: var(--bg-highlight);
-    display: flex; align-items: center; justify-content: center;
-  }
-  /* Vinyl spin overlay */
-  .np-panel-vinyl-ring {
-    position: absolute;
-    inset: -4px;
-    border-radius: 50%;
-    border: 2px dashed rgba(29,185,84,0.2);
-    animation: vinylSpin 8s linear infinite paused;
-    pointer-events: none;
-    opacity: 0;
-    transition: opacity 0.5s;
-  }
-  .np-panel-vinyl-ring.playing {
-    animation-play-state: running;
-    opacity: 1;
-  }
-  .np-panel-song-info {
-    padding: 20px 24px 0;
-    flex-shrink: 0;
-  }
-  .np-panel-song-title {
-    font-size: 18px; font-weight: 800;
     color: var(--text-base);
-    margin-bottom: 4px;
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    letter-spacing: 0.02em;
   }
-  .np-panel-song-artist {
-    font-size: 14px;
-    color: var(--text-subdued);
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    margin-bottom: 2px;
-  }
-  .np-panel-song-album {
-    font-size: 12px; color: rgba(255,255,255,0.3);
-  }
-  .np-panel-like-row {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 16px 24px 0;
-    flex-shrink: 0;
-  }
-  .np-panel-like-btn {
+  .npp-close {
     background: none; border: none; cursor: pointer;
     color: var(--text-subdued);
-    transition: color 0.2s, transform 0.2s;
-    display: flex; align-items: center; gap: 6px;
-    font-size: 12px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    width: 28px; height: 28px; border-radius: 50%;
+    transition: color .15s, background .15s;
   }
-  .np-panel-like-btn:hover { color: var(--text-base); transform: scale(1.1); }
-  .np-panel-like-btn.liked { color: var(--accent); }
+  .npp-close:hover { color: var(--text-base); background: rgba(255,255,255,0.1); }
 
-  /* Mini viz bars in panel */
-  .np-panel-viz {
-    display: flex; align-items: flex-end; gap: 2px;
-    height: 20px;
-    padding: 0 24px;
-    margin-top: 16px;
+  /* Cover */
+  .npp-cover-wrap {
+    padding: 8px 20px 0;
     flex-shrink: 0;
   }
-  .np-panel-viz .bar {
-    flex: 1;
-    max-width: 5px;
-    background: linear-gradient(to top, var(--accent), rgba(29,185,84,0.3));
-    border-radius: 2px 2px 0 0;
-    animation: vizBounce 1s ease-in-out infinite;
-    transform-origin: bottom;
-    min-height: 3px;
-    opacity: 0;
-    transition: opacity 0.3s;
+  .npp-cover {
+    width: 100%; aspect-ratio: 1;
+    border-radius: 8px; overflow: hidden;
+    background: #282828;
+    box-shadow: 0 24px 56px rgba(0,0,0,0.7);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
   }
-  .np-panel-viz.playing .bar { opacity: 1; }
-  .np-panel-viz .bar:nth-child(1)  { animation-duration: 0.8s; animation-delay: 0.0s; }
-  .np-panel-viz .bar:nth-child(2)  { animation-duration: 1.1s; animation-delay: 0.1s; }
-  .np-panel-viz .bar:nth-child(3)  { animation-duration: 0.7s; animation-delay: 0.2s; }
-  .np-panel-viz .bar:nth-child(4)  { animation-duration: 1.3s; animation-delay: 0.05s; }
-  .np-panel-viz .bar:nth-child(5)  { animation-duration: 0.9s; animation-delay: 0.3s; }
-  .np-panel-viz .bar:nth-child(6)  { animation-duration: 1.0s; animation-delay: 0.15s; }
-  .np-panel-viz .bar:nth-child(7)  { animation-duration: 0.75s; animation-delay: 0.25s; }
-  .np-panel-viz .bar:nth-child(8)  { animation-duration: 1.2s; animation-delay: 0.35s; }
-  .np-panel-viz .bar:nth-child(9)  { animation-duration: 0.85s; animation-delay: 0.0s; }
-  .np-panel-viz .bar:nth-child(10) { animation-duration: 1.15s; animation-delay: 0.2s; }
-  .np-panel-viz.paused .bar { animation-play-state: paused; }
+  .npp-cover:hover { transform: scale(1.02); box-shadow: 0 32px 64px rgba(0,0,0,0.85); }
+  .npp-cover img {
+    width: 100%; height: 100%; object-fit: cover; display: block;
+  }
+  .npp-cover-placeholder {
+    width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    background: #282828;
+  }
 
-  /* Queue section in panel */
-  .np-panel-queue {
-    padding: 20px 12px 16px;
+  /* Song info row */
+  .npp-info-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 20px 0;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+  .npp-info { min-width: 0; flex: 1; }
+  .npp-title {
+    font-size: 16px; font-weight: 700;
+    color: var(--text-base);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    margin-bottom: 3px;
+  }
+  .npp-artist {
+    font-size: 13px; color: var(--text-subdued);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    cursor: pointer; transition: color .15s;
+  }
+  .npp-artist:hover { color: var(--text-base); text-decoration: underline; }
+  .npp-like-btn {
+    background: none; border: none; cursor: pointer;
+    color: var(--text-subdued); flex-shrink: 0;
+    display: flex; align-items: center;
+    transition: color .15s, transform .15s;
+    padding: 4px;
+  }
+  .npp-like-btn:hover { color: var(--text-base); transform: scale(1.12); }
+  .npp-like-btn.liked { color: var(--accent); }
+
+  /* Progress */
+  .npp-progress-wrap {
+    padding: 18px 20px 0;
+    flex-shrink: 0;
+  }
+  .npp-progress-track {
+    width: 100%; height: 4px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 2px; cursor: pointer;
+    position: relative;
+    transition: height .15s;
+  }
+  .npp-progress-track:hover { height: 6px; }
+  .npp-progress-fill {
+    height: 100%; background: var(--text-base);
+    border-radius: 2px; width: 0%;
+    transition: width 0.4s linear;
+    pointer-events: none;
+    position: relative;
+  }
+  .npp-progress-track:hover .npp-progress-fill { background: var(--accent); }
+  .npp-progress-fill::after {
+    content: '';
+    position: absolute; right: -5px; top: 50%;
+    transform: translateY(-50%) scale(0);
+    width: 12px; height: 12px; border-radius: 50%;
+    background: white;
+    transition: transform .15s;
+  }
+  .npp-progress-track:hover .npp-progress-fill::after { transform: translateY(-50%) scale(1); }
+  .npp-time-row {
+    display: flex; justify-content: space-between;
+    padding: 6px 0 0;
+    font-size: 11px; color: var(--text-subdued);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Main controls */
+  .npp-controls {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 16px 0;
+    flex-shrink: 0;
+  }
+  .npp-ctrl-btn {
+    background: none; border: none; cursor: pointer;
+    color: var(--text-subdued);
+    display: flex; align-items: center; justify-content: center;
+    width: 36px; height: 36px; border-radius: 50%;
+    transition: color .15s, transform .1s;
+  }
+  .npp-ctrl-btn:hover { color: var(--text-base); transform: scale(1.08); }
+  .npp-ctrl-btn.active { color: var(--accent); }
+  .npp-play-btn {
+    width: 48px; height: 48px;
+    background: var(--text-base); color: #000;
+    border: none; border-radius: 50%; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: transform .1s, background .15s;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+  }
+  .npp-play-btn:hover { background: #fff; transform: scale(1.06); }
+  .npp-play-btn:active { transform: scale(0.94); }
+
+  /* Volume row */
+  .npp-volume-row {
+    display: flex; align-items: center; gap: 8px;
+    padding: 14px 20px 0;
+    flex-shrink: 0;
+  }
+  .npp-vol-icon {
+    background: none; border: none; cursor: pointer;
+    color: var(--text-subdued); flex-shrink: 0;
+    display: flex; align-items: center;
+    transition: color .15s;
+  }
+  .npp-vol-icon:hover { color: var(--text-base); }
+  .npp-vol-track {
+    flex: 1; height: 4px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 2px; cursor: pointer; position: relative;
+    transition: height .15s;
+  }
+  .npp-vol-track:hover { height: 6px; }
+  .npp-vol-fill {
+    height: 100%; background: var(--text-base);
+    border-radius: 2px; width: 100%;
+    pointer-events: none; position: relative;
+    transition: width .05s;
+  }
+  .npp-vol-track:hover .npp-vol-fill { background: var(--accent); }
+  .npp-vol-fill::after {
+    content: '';
+    position: absolute; right: -5px; top: 50%;
+    transform: translateY(-50%) scale(0);
+    width: 12px; height: 12px; border-radius: 50%; background: white;
+    transition: transform .15s;
+  }
+  .npp-vol-track:hover .npp-vol-fill::after { transform: translateY(-50%) scale(1); }
+
+  /* Queue section */
+  .npp-queue-section {
+    margin-top: 20px;
     flex: 1;
   }
-  .np-panel-queue-title {
+  .npp-queue-header {
     font-size: 13px; font-weight: 700;
-    color: var(--text-subdued);
-    padding: 0 12px;
-    margin-bottom: 12px;
-    text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--text-base);
+    padding: 0 20px 12px;
+    letter-spacing: 0.01em;
   }
-  .np-queue-item {
+  .npp-queue-item {
     display: flex; align-items: center; gap: 12px;
     padding: 8px 12px;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background 0.15s;
+    margin: 0 8px;
+    border-radius: 6px; cursor: pointer;
+    transition: background .15s;
   }
-  .np-queue-item:hover { background: rgba(255,255,255,0.07); }
-  .np-queue-item.active { background: rgba(29,185,84,0.1); }
-  .np-queue-cover {
-    width: 36px; height: 36px;
-    border-radius: 6px;
-    object-fit: cover;
-    background: var(--bg-card);
-    flex-shrink: 0;
-    overflow: hidden;
-    display: flex; align-items: center; justify-content: center;
+  .npp-queue-item:hover { background: rgba(255,255,255,0.08); }
+  .npp-queue-item.npp-active { background: rgba(29,185,84,0.12); }
+  .npp-queue-img {
+    width: 40px; height: 40px; border-radius: 4px; object-fit: cover;
+    background: #282828; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center; overflow: hidden;
   }
-  .np-queue-cover img { width: 100%; height: 100%; object-fit: cover; }
-  .np-queue-info { flex: 1; min-width: 0; }
-  .np-queue-title {
-    font-size: 13px; font-weight: 600;
-    color: var(--text-base);
+  .npp-queue-img img { width: 100%; height: 100%; object-fit: cover; }
+  .npp-queue-info { flex: 1; min-width: 0; }
+  .npp-queue-name {
+    font-size: 13px; font-weight: 500; color: var(--text-base);
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   }
-  .np-queue-item.active .np-queue-title { color: var(--accent); }
-  .np-queue-artist {
+  .npp-queue-item.npp-active .npp-queue-name { color: var(--accent); }
+  .npp-queue-sub {
     font-size: 11px; color: var(--text-subdued);
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   }
-  .np-queue-dur { font-size: 11px; color: var(--text-subdued); flex-shrink: 0; }
+  .npp-queue-dur { font-size: 11px; color: var(--text-subdued); flex-shrink: 0; }
+
+  /* Vinyl keyframe reused */
+  @keyframes vinylSpin2 {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+  }
 
   /* =============================================
      MOBILE FULL-SCREEN PLAYER
@@ -2289,49 +2350,85 @@
 
 <!-- ========== NOW PLAYING PANEL (desktop) ========== -->
 <div id="nowpanel">
-  <div class="np-panel-inner">
-    <div class="np-panel-header">
-      <span class="np-panel-title">Reproduciendo ahora</span>
-      <button class="np-panel-close" onclick="toggleNowPanel()" title="Cerrar panel">
-        <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M19 11H7.83l4.88-4.88c.39-.39.39-1.03 0-1.42-.39-.39-1.02-.39-1.41 0l-6.59 6.59c-.39.39-.39 1.02 0 1.41l6.59 6.59c.39.39 1.02.39 1.41 0 .39-.39.39-1.02 0-1.41L7.83 13H19c.55 0 1-.45 1-1s-.45-1-1-1z"/></svg>
+  <div class="npp-bg" id="npp-bg"></div>
+  <div class="npp-inner">
+
+    <!-- Header -->
+    <div class="npp-header">
+      <span class="npp-header-title">Reproduciendo ahora</span>
+      <button class="npp-close" onclick="toggleNowPanel()" title="Cerrar">
+        <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M19 11H7.83l4.88-4.88c.39-.39.39-1.03 0-1.42-.39-.39-1.02-.39-1.41 0l-6.59 6.59c-.39.39-.39 1.02 0 1.41l6.59 6.59c.39.39 1.02.39 1.41 0 .39-.39.39-1.02 0-1.41L7.83 13H19c.55 0 1-.45 1-1s-.45-1-1-1z"/></svg>
       </button>
     </div>
-    <div class="np-panel-cover-wrap">
-      <div class="np-panel-cover" id="np-panel-cover">
-        <div class="np-panel-cover-placeholder">
-          <svg width="80" height="80" fill="currentColor" viewBox="0 0 24 24" style="color:#3a3a3a"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
+
+    <!-- Cover -->
+    <div class="npp-cover-wrap">
+      <div class="npp-cover" id="npp-cover">
+        <div class="npp-cover-placeholder">
+          <svg width="80" height="80" fill="currentColor" viewBox="0 0 24 24" style="color:#444"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
         </div>
-        <div class="np-panel-vinyl-ring" id="np-panel-vinyl-ring"></div>
       </div>
     </div>
-    <div class="np-panel-song-info">
-      <div class="np-panel-song-title" id="np-panel-title">—</div>
-      <div class="np-panel-song-artist" id="np-panel-artist">—</div>
-      <div class="np-panel-song-album" id="np-panel-album"></div>
-    </div>
-    <div class="np-panel-like-row">
-      <button class="np-panel-like-btn" id="np-panel-like-btn" onclick="toggleLikeFromPanel()">
+
+    <!-- Info + like -->
+    <div class="npp-info-row">
+      <div class="npp-info">
+        <div class="npp-title" id="npp-title">—</div>
+        <div class="npp-artist" id="npp-artist">—</div>
+      </div>
+      <button class="npp-like-btn" id="npp-like-btn" onclick="toggleLikeFromPanel()" title="Me gusta">
         <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-        <span id="np-panel-like-txt">Guardar</span>
       </button>
-      <div style="display:flex;gap:8px">
-        <button class="ctrl-btn" id="np-panel-shuffle" title="Aleatorio" onclick="toggleShuffle()" style="width:28px;height:28px;">
-          <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41l-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z"/></svg>
-        </button>
-        <button class="ctrl-btn" id="np-panel-repeat" title="Repetir" onclick="cycleRepeat()" style="width:28px;height:28px;">
-          <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/></svg>
-        </button>
+    </div>
+
+    <!-- Progress bar -->
+    <div class="npp-progress-wrap">
+      <div class="npp-progress-track" id="npp-progress-track">
+        <div class="npp-progress-fill" id="npp-progress-fill"></div>
+      </div>
+      <div class="npp-time-row">
+        <span id="npp-time-cur">0:00</span>
+        <span id="npp-time-dur">0:00</span>
       </div>
     </div>
-    <div class="np-panel-viz" id="np-panel-viz">
-      <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
-      <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
-      <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+
+    <!-- Controls -->
+    <div class="npp-controls">
+      <button class="npp-ctrl-btn" id="npp-shuffle-btn" onclick="toggleShuffle()" title="Aleatorio">
+        <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41l-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z"/></svg>
+      </button>
+      <button class="npp-ctrl-btn" onclick="prevSong()" title="Anterior">
+        <svg width="22" height="22" fill="currentColor" viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
+      </button>
+      <button class="npp-play-btn" id="npp-play-btn" onclick="togglePlay()" title="Reproducir/Pausar">
+        <svg id="npp-icon-play" width="22" height="22" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5.14v14l11-7-11-7z"/></svg>
+        <svg id="npp-icon-pause" width="22" height="22" fill="currentColor" viewBox="0 0 24 24" style="display:none"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+      </button>
+      <button class="npp-ctrl-btn" onclick="nextSong()" title="Siguiente">
+        <svg width="22" height="22" fill="currentColor" viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6h2v12h-2z"/></svg>
+      </button>
+      <button class="npp-ctrl-btn" id="npp-repeat-btn" onclick="cycleRepeat()" title="Repetir">
+        <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/></svg>
+      </button>
     </div>
-    <div class="np-panel-queue">
-      <div class="np-panel-queue-title">Cola de reproducción</div>
-      <div id="np-panel-queue-list"></div>
+
+    <!-- Volume -->
+    <div class="npp-volume-row">
+      <button class="npp-vol-icon" id="npp-mute-btn" onclick="toggleMute()" title="Silenciar">
+        <svg id="npp-vol-icon" width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+        <svg id="npp-muted-icon" width="16" height="16" fill="currentColor" viewBox="0 0 24 24" style="display:none"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/></svg>
+      </button>
+      <div class="npp-vol-track" id="npp-vol-track">
+        <div class="npp-vol-fill" id="npp-vol-fill"></div>
+      </div>
     </div>
+
+    <!-- Queue -->
+    <div class="npp-queue-section">
+      <div class="npp-queue-header">A continuación</div>
+      <div id="npp-queue-list"></div>
+    </div>
+
   </div>
 </div>
 
@@ -2736,8 +2833,7 @@ function updateVinylState() {
   // Sync now panel vinyl ring
   const panelVinyl = document.getElementById('np-panel-vinyl-ring');
   if (panelVinyl) panelVinyl.classList.toggle('playing', isPlaying);
-  const panelViz = document.getElementById('np-panel-viz');
-  if (panelViz) { panelViz.classList.toggle('playing', isPlaying); panelViz.classList.toggle('paused', !isPlaying); }
+  // np-panel-viz removed
   // Sync mobile full player
   const mfpCover = document.getElementById('mfp-cover');
   if (mfpCover) mfpCover.classList.toggle('playing', isPlaying);
@@ -2954,6 +3050,7 @@ function nextSong() {
    ACTUALIZAR ICONOS Y ESTADOS
 ============================================= */
 function updatePlayIcon() {
+  _nppSyncPlay();
   if (isPlaying) {
     iconPlay.style.display = 'none';
     iconPause.style.display = 'block';
@@ -2986,59 +3083,81 @@ function toggleNowPanel() {
 function updateNowPanel() {
   if (currentIndex < 0) return;
   const song = songs[currentIndex];
-  const panelCover = document.getElementById('np-panel-cover');
-  const panelTitle = document.getElementById('np-panel-title');
-  const panelArtist = document.getElementById('np-panel-artist');
-  const panelAlbum = document.getElementById('np-panel-album');
-  const panelVinyl = document.getElementById('np-panel-vinyl-ring');
-  const panelViz = document.getElementById('np-panel-viz');
-  const panelLike = document.getElementById('np-panel-like-btn');
-  const panelLikeTxt = document.getElementById('np-panel-like-txt');
 
-  if (panelTitle) panelTitle.textContent = song.title || '—';
-  if (panelArtist) panelArtist.textContent = song.artist || '—';
-  if (panelAlbum) panelAlbum.textContent = song.album || '';
+  // Dynamic background gradient
+  const gradients = [
+    ['#0d3320','#1a0a2e'],['#0a1f2e','#1a2e0a'],['#2e0a1a','#0a2e1f'],
+    ['#1f0a2e','#2e1f0a'],['#0a2e2e','#2e0a0a'],['#2e1a0a','#0a1a2e'],
+    ['#1a2e0a','#2e0a1f'],['#0a0a2e','#2e1a1a']
+  ];
+  const [c1, c2] = gradients[currentIndex % gradients.length];
+  const bg = document.getElementById('npp-bg');
+  if (bg) bg.style.background = `linear-gradient(180deg, ${c1} 0%, ${c2} 40%, #121212 75%)`;
 
-  if (panelCover) {
-    const inner = song.cover
-      ? `<img src="${song.cover}" alt="${escapeHtml(song.title)}" style="width:100%;height:100%;object-fit:cover;display:block;" onerror="this.style.display='none'">`
-      : `<div class="np-panel-cover-placeholder"><svg width="80" height="80" fill="currentColor" viewBox="0 0 24 24" style="color:#3a3a3a"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg></div>`;
-    // Keep vinyl ring
-    panelCover.innerHTML = inner + `<div class="np-panel-vinyl-ring ${isPlaying?'playing':''}" id="np-panel-vinyl-ring"></div>`;
+  // Cover
+  const cover = document.getElementById('npp-cover');
+  if (cover) {
+    cover.innerHTML = song.cover
+      ? `<img src="${song.cover}" alt="" onerror="this.style.display='none'">`
+      : `<div class="npp-cover-placeholder"><svg width="80" height="80" fill="currentColor" viewBox="0 0 24 24" style="color:#444"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg></div>`;
   }
 
-  if (panelViz) {
-    panelViz.classList.toggle('playing', isPlaying);
-    panelViz.classList.toggle('paused', !isPlaying);
-  }
+  // Info
+  const titleEl = document.getElementById('npp-title');
+  const artistEl = document.getElementById('npp-artist');
+  if (titleEl) titleEl.textContent = song.title || '—';
+  if (artistEl) artistEl.textContent = song.artist || '—';
 
-  const liked = likedSongs.has(currentIndex);
-  if (panelLike) panelLike.classList.toggle('liked', liked);
-  if (panelLike) panelLike.innerHTML = (liked
-    ? `<svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.593c-5.63-5.539-11-10.297-11-14.402 0-3.791 3.068-5.191 5.281-5.191 1.312 0 4.151.501 5.719 4.457 1.59-3.968 4.464-4.447 5.726-4.447 2.54 0 5.274 1.621 5.274 5.181 0 4.069-5.136 8.625-11 14.402z"/></svg>`
-    : `<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>`)
-    + `<span>${liked ? 'Guardado' : 'Guardar'}</span>`;
+  // Like button
+  _nppSyncLike();
 
-  // Render queue (próximas canciones)
-  const queueList = document.getElementById('np-panel-queue-list');
+  // Play/pause icons
+  _nppSyncPlay();
+
+  // Shuffle / repeat
+  const shuffleBtn = document.getElementById('npp-shuffle-btn');
+  if (shuffleBtn) shuffleBtn.classList.toggle('active', isShuffle);
+  const repeatBtn = document.getElementById('npp-repeat-btn');
+  if (repeatBtn) repeatBtn.classList.toggle('active', repeatMode > 0);
+
+  // Queue
+  const queueList = document.getElementById('npp-queue-list');
   if (queueList) {
     const start = Math.max(0, currentIndex - 1);
-    const end = Math.min(songs.length, currentIndex + 8);
+    const end = Math.min(songs.length, currentIndex + 10);
     queueList.innerHTML = songs.slice(start, end).map((s, i) => {
-      const realIdx = start + i;
-      const isActive = realIdx === currentIndex;
-      return `<div class="np-queue-item ${isActive ? 'active' : ''}" onclick="playSong(${realIdx})">
-        <div class="np-queue-cover">
-          ${s.cover ? `<img src="${s.cover}" alt="" onerror="this.style.display='none'">` : `<svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" style="color:#5a5a5a"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>`}
+      const ri = start + i;
+      const active = ri === currentIndex;
+      const imgHtml = s.cover
+        ? `<img src="${s.cover}" alt="" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.display='none'">`
+        : `<svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" style="color:#555"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>`;
+      return `<div class="npp-queue-item ${active ? 'npp-active' : ''}" onclick="playSong(${ri})">
+        <div class="npp-queue-img">${imgHtml}</div>
+        <div class="npp-queue-info">
+          <div class="npp-queue-name">${escapeHtml(s.title)}</div>
+          <div class="npp-queue-sub">${escapeHtml(s.artist)}</div>
         </div>
-        <div class="np-queue-info">
-          <div class="np-queue-title">${escapeHtml(s.title)}</div>
-          <div class="np-queue-artist">${escapeHtml(s.artist)}</div>
-        </div>
-        <span class="np-queue-dur">${s.duration || ''}</span>
+        <span class="npp-queue-dur">${s.duration || ''}</span>
       </div>`;
     }).join('');
   }
+}
+
+function _nppSyncLike() {
+  const btn = document.getElementById('npp-like-btn');
+  if (!btn) return;
+  const liked = likedSongs.has(currentIndex);
+  btn.classList.toggle('liked', liked);
+  btn.innerHTML = liked
+    ? `<svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.593c-5.63-5.539-11-10.297-11-14.402 0-3.791 3.068-5.191 5.281-5.191 1.312 0 4.151.501 5.719 4.457 1.59-3.968 4.464-4.447 5.726-4.447 2.54 0 5.274 1.621 5.274 5.181 0 4.069-5.136 8.625-11 14.402z"/></svg>`
+    : `<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>`;
+}
+
+function _nppSyncPlay() {
+  const p = document.getElementById('npp-icon-play');
+  const pa = document.getElementById('npp-icon-pause');
+  if (p) p.style.display = isPlaying ? 'none' : 'block';
+  if (pa) pa.style.display = isPlaying ? 'block' : 'none';
 }
 
 function toggleLikeFromPanel() {
@@ -3054,6 +3173,7 @@ function toggleLikeFromPanel() {
   updateLikeButton();
   updateHeroLike();
   updateNowPanel();
+  _nppSyncLike();
   updateMobileFullPlayer();
   if (currentView === 'biblioteca') renderFavorites();
 }
@@ -3832,6 +3952,69 @@ document.getElementById('search-main-input').addEventListener('input', function(
     }).join('')}
   </div>`;
 });
+
+
+/* ── New NowPanel progress + volume interactions ── */
+(function() {
+  // Progress seek
+  document.addEventListener('click', function(e) {
+    const track = document.getElementById('npp-progress-track');
+    if (!track || !track.contains(e.target)) return;
+    if (!audio.duration) return;
+    const r = track.getBoundingClientRect();
+    audio.currentTime = ((e.clientX - r.left) / r.width) * audio.duration;
+  });
+
+  // Volume click
+  document.addEventListener('click', function(e) {
+    const track = document.getElementById('npp-vol-track');
+    if (!track || !track.contains(e.target)) return;
+    const r = track.getBoundingClientRect();
+    const pct = Math.max(0, Math.min(1, (e.clientX - r.left) / r.width));
+    audio.volume = pct;
+    const fill = document.getElementById('npp-vol-fill');
+    if (fill) fill.style.width = (pct * 100) + '%';
+    // sync main volume slider
+    const mainVol = document.getElementById('volume');
+    if (mainVol) { mainVol.value = pct * 100; mainVol.dispatchEvent(new Event('input')); }
+  });
+
+  // Sync progress fill + times on timeupdate
+  audio.addEventListener('timeupdate', function() {
+    const fill = document.getElementById('npp-progress-fill');
+    const cur = document.getElementById('npp-time-cur');
+    const dur = document.getElementById('npp-time-dur');
+    if (fill && audio.duration) fill.style.width = ((audio.currentTime / audio.duration) * 100) + '%';
+    const fmt = s => { const m = Math.floor(s/60); const sec = Math.floor(s%60); return m+':'+(sec<10?'0':'')+sec; };
+    if (cur) cur.textContent = fmt(audio.currentTime);
+    if (dur && audio.duration) dur.textContent = fmt(audio.duration);
+  });
+
+  // Sync volume fill with main volume slider
+  const mainVol = document.getElementById('volume');
+  if (mainVol) {
+    mainVol.addEventListener('input', function() {
+      const fill = document.getElementById('npp-vol-fill');
+      if (fill) fill.style.width = this.value + '%';
+    });
+    // Init
+    const fill = document.getElementById('npp-vol-fill');
+    if (fill) fill.style.width = mainVol.value + '%';
+  }
+
+  // Mute toggle sync
+  window.toggleMute = function() {
+    audio.muted = !audio.muted;
+    const vi = document.getElementById('npp-vol-icon');
+    const mi = document.getElementById('npp-muted-icon');
+    const vi2 = document.getElementById('icon-vol');
+    const mi2 = document.getElementById('icon-muted');
+    if (vi) vi.style.display = audio.muted ? 'none' : 'block';
+    if (mi) mi.style.display = audio.muted ? 'block' : 'none';
+    if (vi2) vi2.style.display = audio.muted ? 'none' : 'block';
+    if (mi2) mi2.style.display = audio.muted ? 'block' : 'none';
+  };
+})();
 
 loadVolume();
 loadFavorites();
