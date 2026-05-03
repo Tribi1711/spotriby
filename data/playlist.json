@@ -12,6 +12,16 @@
     },
     {
       "id": 2,
+      "title": "La Disco",
+      "artist": "Tribi",
+      "album": "La Vida",
+      "year": 2026,
+      "duration": "2:30",
+      "mp3": "songs/cancion7.mp3",
+      "cover": "songs/cover7.jpg"
+    },
+    {
+      "id": 3,
       "title": "Roto Por Ti",
       "artist": "Tribi",
       "album": "La Vida",
@@ -21,7 +31,7 @@
       "cover": "songs/cover6.jpg"
     },
     {
-      "id": 3,
+      "id": 4,
       "title": "ELLA",
       "artist": "dvdsound",
       "album": "Sencillo",
@@ -31,7 +41,7 @@
       "cover": "songs/cover5.jpg"
     },
     {
-      "id": 4,
+      "id": 5,
       "title": "Tribi",
       "artist": "dvdsound",
       "album": "Dsv",
@@ -41,7 +51,7 @@
       "cover": "songs/cover2.jpg"
     },
     {
-      "id": 5,
+      "id": 6,
       "title": "Estrés (REMIX)",
       "artist": "Tribi",
       "album": "La Vida",
@@ -51,7 +61,7 @@
       "cover": "songs/cover1.jpg"
     },
     {
-      "id": 6,
+      "id": 7,
       "title": "Los Tetes Pa Siempre",
       "artist": "Tribi",
       "album": "No Traiciona",
