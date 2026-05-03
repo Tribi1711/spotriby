@@ -1983,30 +1983,65 @@ function updateCastUI(casting) {
   if (casting) showToast('📺 Conectado al Chromecast');
 }
 
+function resolveAbsoluteUrl(url) {
+  if (!url) return null;
+  // Ya es absoluta
+  if (/^https?:\/\//i.test(url)) return url;
+  // Construir URL absoluta desde la ubicación actual
+  try {
+    return new URL(url, window.location.href).href;
+  } catch(e) {
+    return url;
+  }
+}
+
+function isCastableUrl(url) {
+  if (!url) return false;
+  // El Chromecast NO puede acceder a localhost, 127.x, 192.x, file://, etc.
+  return /^https?:\/\//i.test(url) &&
+    !/localhost/i.test(url) &&
+    !/127\.0\.0\./i.test(url) &&
+    !/192\.168\./i.test(url) &&
+    !/10\.\d+\.\d+\.\d+/i.test(url) &&
+    !/^file:\/\//i.test(url);
+}
+
 function updateCastMedia(song) {
   if (!castSession || !song) return;
-  if (!song.mp3) { showToast('⚠️ Esta canción no tiene URL de audio para Chromecast'); return; }
+  if (!song.mp3) { showToast('⚠️ Esta canción no tiene URL de audio'); return; }
+
+  const absoluteUrl = resolveAbsoluteUrl(song.mp3);
+  const absoluteCover = song.cover ? resolveAbsoluteUrl(song.cover) : null;
+
+  // Avisar si la URL no es accesible públicamente por el Chromecast
+  if (!isCastableUrl(absoluteUrl)) {
+    showToast('⚠️ Las canciones deben estar en un servidor web público para Chromecast');
+    console.warn('[Cast] URL no accesible por Chromecast:', absoluteUrl,
+      '\nEl Chromecast es un dispositivo independiente y no puede acceder a archivos locales (localhost, IPs privadas, file://).',
+      '\nSube los MP3s a un servidor público o usa URLs de streaming (ej: S3, Dropbox directo, etc.)');
+    return;
+  }
+
   try {
-    const mediaInfo = new chrome.cast.media.MediaInfo(
-      song.mp3,
-      'audio/mpeg'
-    );
+    const mediaInfo = new chrome.cast.media.MediaInfo(absoluteUrl, 'audio/mpeg');
     mediaInfo.metadata = new chrome.cast.media.MusicTrackMediaMetadata();
     mediaInfo.metadata.title = song.title || 'Sin título';
     mediaInfo.metadata.artist = song.artist || '';
     mediaInfo.metadata.albumName = song.album || '';
-    if (song.cover) {
-      mediaInfo.metadata.images = [new chrome.cast.Image(song.cover)];
+    if (absoluteCover && isCastableUrl(absoluteCover)) {
+      mediaInfo.metadata.images = [new chrome.cast.Image(absoluteCover)];
     }
     const request = new chrome.cast.media.LoadRequest(mediaInfo);
     request.currentTime = 0;
-    request.autoplay = isPlaying;
+    request.autoplay = true;
     castSession.loadMedia(request).then(
       () => showToast(`📺 Enviando a TV: ${song.title}`),
       (err) => {
         console.error('[Cast] Error cargando media:', err);
-        const msg = err && err.description ? err.description : JSON.stringify(err);
-        showToast(`⚠️ Error Cast: ${msg}`);
+        const description = err && err.description ? err.description : (err && err.code ? 'Código: ' + err.code : 'Error desconocido');
+        showToast(`⚠️ Chromecast rechazó el audio: ${description}`);
+        console.warn('[Cast] URL enviada:', absoluteUrl,
+          '\nVerifica que el servidor permita CORS y que la URL sea accesible desde internet.');
       }
     );
   } catch(e) {
@@ -2066,18 +2101,25 @@ function openCastDialog() {
 }
 
 function showFallbackCastInstructions(statusEl, songInfoEl, castSongEl) {
+  // Detectar si los MP3s son locales
+  const localWarning = songs.length > 0 && !isCastableUrl(resolveAbsoluteUrl(songs[0].mp3))
+    ? `<div style="background:rgba(255,180,0,0.12);border:1px solid rgba(255,180,0,0.3);border-radius:8px;padding:12px 14px;margin-bottom:14px;font-size:13px;line-height:1.6;color:#ffd060;">
+        <b>⚠️ Tus archivos son locales</b><br>
+        El Chromecast es un dispositivo independiente y <b>no puede acceder a archivos de tu PC</b> (localhost ni rutas relativas).<br><br>
+        Para que funcione, sube los MP3s a un servidor con URL pública (ej: Dropbox, Google Drive con enlace directo, Amazon S3, tu propio hosting...) y actualiza las rutas en <code>playlist.json</code>.
+      </div>`
+    : '';
+
   if (statusEl) {
     statusEl.innerHTML = `
       <div style="font-size:32px;margin-bottom:12px;">📱 → 📺</div>
-      <p style="font-size:14px;line-height:1.7;margin-bottom:16px;color:#b3b3b3;">
-        Para enviar música a tu Chromecast o Smart TV:
-      </p>
+      ${localWarning}
       <div style="text-align:left;background:rgba(255,255,255,0.06);border-radius:10px;padding:16px;font-size:13px;line-height:1.8;color:#ccc;">
-        <b style="color:#fff;display:block;margin-bottom:6px;">🟢 Chrome en Android / escritorio:</b>
-        Menú (⋮) → Transmitir → Selecciona tu dispositivo
+        <b style="color:#fff;display:block;margin-bottom:6px;">🟢 Requisito principal:</b>
+        Los archivos MP3 deben estar en una <b style="color:#fff">URL pública https://</b> accesible desde internet
         <br><br>
-        <b style="color:#fff;display:block;margin-bottom:6px;">🔵 Activación automática:</b>
-        Abre esta app en Chrome con tu Chromecast en la misma red Wi-Fi
+        <b style="color:#fff;display:block;margin-bottom:6px;">🔵 Cómo conectar:</b>
+        El selector de dispositivos se abre automáticamente en Chrome cuando hay un Chromecast en la misma red Wi-Fi
         <br><br>
         <b style="color:#fff;display:block;margin-bottom:6px;">🍎 iOS / Safari:</b>
         Usa AirPlay o la app Google Home para reflejar pantalla
