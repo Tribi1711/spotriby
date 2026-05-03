@@ -1985,9 +1985,10 @@ function updateCastUI(casting) {
 
 function updateCastMedia(song) {
   if (!castSession || !song) return;
+  if (!song.mp3) { showToast('⚠️ Esta canción no tiene URL de audio para Chromecast'); return; }
   try {
     const mediaInfo = new chrome.cast.media.MediaInfo(
-      song.mp3 || '',
+      song.mp3,
       'audio/mpeg'
     );
     mediaInfo.metadata = new chrome.cast.media.MusicTrackMediaMetadata();
@@ -1998,57 +1999,110 @@ function updateCastMedia(song) {
       mediaInfo.metadata.images = [new chrome.cast.Image(song.cover)];
     }
     const request = new chrome.cast.media.LoadRequest(mediaInfo);
+    request.currentTime = 0;
+    request.autoplay = isPlaying;
     castSession.loadMedia(request).then(
       () => showToast(`📺 Enviando a TV: ${song.title}`),
-      (err) => { console.error('[Cast] Error:', err); showToast('⚠️ Error enviando a Chromecast'); }
+      (err) => {
+        console.error('[Cast] Error cargando media:', err);
+        const msg = err && err.description ? err.description : JSON.stringify(err);
+        showToast(`⚠️ Error Cast: ${msg}`);
+      }
     );
   } catch(e) {
-    console.error('[Cast] Error:', e);
+    console.error('[Cast] Excepción:', e);
+    showToast('⚠️ Error inesperado enviando a Chromecast');
   }
 }
 
 function openCastDialog() {
   const dialog = document.getElementById('cast-dialog');
-  dialog.style.display='flex';
-
-  // Try native Cast API first
-  if (typeof cast !== 'undefined' && cast.framework) {
-    try {
-      cast.framework.CastContext.getInstance().requestSession();
-      closeCastDialog();
-      return;
-    } catch(e) {}
-  }
-
-  // Fallback: show manual instructions
   const statusEl = document.getElementById('cast-status-text');
   const songInfoEl = document.getElementById('cast-current-song');
   const castSongEl = document.getElementById('cast-song-info');
 
-  setTimeout(() => {
-    if (statusEl) {
-      statusEl.innerHTML = `
-        <div style="font-size:16px;margin-bottom:16px;">📱 → 📺</div>
-        <p style="font-size:14px;line-height:1.7;margin-bottom:16px;color:#b3b3b3;">
-          Para enviar música a tu Chromecast o Smart TV:
-        </p>
-        <div style="text-align:left;background:rgba(255,255,255,0.06);border-radius:10px;padding:16px;font-size:13px;line-height:1.8;color:#ccc;">
-          <b style="color:#fff;display:block;margin-bottom:8px;">Desde Android/Chrome:</b>
-          Pulsa el icono de Cast (⊡) en Chrome → Selecciona tu dispositivo → Comparte esta pestaña
-          <br><br>
-          <b style="color:#fff;display:block;margin-bottom:8px;">Desde iOS:</b>
-          Usa AirPlay o Google Home App para reflejar la pantalla
-          <br><br>
-          <b style="color:#fff;display:block;margin-bottom:8px;">Protocolo nativo:</b>
-          Se activa automáticamente si abres esta app en Chrome con Chromecast disponible en la misma red
-        </div>`;
-    }
+  // Si ya estamos emitiendo, mostrar opciones para desconectar
+  if (isCasting) {
+    dialog.style.display='flex';
+    if (statusEl) statusEl.innerHTML = `
+      <div style="font-size:40px;margin-bottom:12px;">📺</div>
+      <p style="font-size:15px;font-weight:700;color:var(--accent);margin-bottom:8px;">Reproduciendo en TV</p>
+      <p style="font-size:13px;color:#b3b3b3;margin-bottom:20px;">La música se está enviando a tu Chromecast</p>
+      <button onclick="stopCasting()" style="background:#e22134;color:#fff;border:none;border-radius:20px;padding:10px 24px;font-size:14px;font-weight:700;cursor:pointer;">⏹ Detener emisión</button>`;
     if (currentIndex >= 0 && songInfoEl && castSongEl) {
       const song = songs[currentIndex];
       songInfoEl.style.display='block';
       castSongEl.textContent = `${song.title||'Sin título'} — ${song.artist||''}`;
     }
-  }, 800);
+    return;
+  }
+
+  // Intentar Cast nativo (abre el selector de dispositivos del navegador)
+  if (typeof cast !== 'undefined' && cast.framework) {
+    try {
+      // No cerramos el diálogo — el selector nativo se superpone al diálogo
+      dialog.style.display='flex';
+      if (statusEl) statusEl.innerHTML = `
+        <div style="width:40px;height:40px;border:3px solid rgba(255,255,255,0.15);border-top-color:var(--accent);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 16px;"></div>
+        <p style="font-size:14px;color:#b3b3b3;">Abriendo selector de dispositivos...</p>`;
+      cast.framework.CastContext.getInstance().requestSession().then(() => {
+        closeCastDialog();
+      }).catch((err) => {
+        // El usuario cerró el selector o no hay dispositivos
+        showFallbackCastInstructions(statusEl, songInfoEl, castSongEl);
+      });
+      if (currentIndex >= 0 && songInfoEl && castSongEl) {
+        const song = songs[currentIndex];
+        songInfoEl.style.display='block';
+        castSongEl.textContent = `${song.title||'Sin título'} — ${song.artist||''}`;
+      }
+      return;
+    } catch(e) {}
+  }
+
+  // Fallback: instrucciones manuales
+  dialog.style.display='flex';
+  setTimeout(() => showFallbackCastInstructions(statusEl, songInfoEl, castSongEl), 400);
+}
+
+function showFallbackCastInstructions(statusEl, songInfoEl, castSongEl) {
+  if (statusEl) {
+    statusEl.innerHTML = `
+      <div style="font-size:32px;margin-bottom:12px;">📱 → 📺</div>
+      <p style="font-size:14px;line-height:1.7;margin-bottom:16px;color:#b3b3b3;">
+        Para enviar música a tu Chromecast o Smart TV:
+      </p>
+      <div style="text-align:left;background:rgba(255,255,255,0.06);border-radius:10px;padding:16px;font-size:13px;line-height:1.8;color:#ccc;">
+        <b style="color:#fff;display:block;margin-bottom:6px;">🟢 Chrome en Android / escritorio:</b>
+        Menú (⋮) → Transmitir → Selecciona tu dispositivo
+        <br><br>
+        <b style="color:#fff;display:block;margin-bottom:6px;">🔵 Activación automática:</b>
+        Abre esta app en Chrome con tu Chromecast en la misma red Wi-Fi
+        <br><br>
+        <b style="color:#fff;display:block;margin-bottom:6px;">🍎 iOS / Safari:</b>
+        Usa AirPlay o la app Google Home para reflejar pantalla
+      </div>`;
+  }
+  if (currentIndex >= 0 && songInfoEl && castSongEl) {
+    const song = songs[currentIndex];
+    songInfoEl.style.display='block';
+    castSongEl.textContent = `${song.title||'Sin título'} — ${song.artist||''}`;
+  }
+}
+
+function stopCasting() {
+  try {
+    if (typeof cast !== 'undefined' && cast.framework) {
+      const ctx = cast.framework.CastContext.getInstance();
+      const session = ctx.getCurrentSession();
+      if (session) session.endSession(true);
+    }
+  } catch(e) {}
+  castSession = null;
+  isCasting = false;
+  updateCastUI(false);
+  closeCastDialog();
+  showToast('📺 Emisión detenida');
 }
 
 function closeCastDialog() {
