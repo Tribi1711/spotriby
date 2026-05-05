@@ -13,8 +13,7 @@
 <link rel="apple-touch-icon" href="logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-<!-- Google Cast SDK -->
-<script src="https://www.gstatic.com/cv/js/sender/v1/cast_sender.js?loadCastFramework=1"></script>
+
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -142,32 +141,7 @@ html, body {
   color: var(--text-base); cursor: pointer; padding: 4px;
 }
 
-/* Cast button */
-.cast-btn {
-  background: none; border: none; cursor: pointer;
-  color: var(--text-subdued);
-  display: flex; align-items: center; justify-content: center;
-  width: 32px; height: 32px; border-radius: 50%;
-  transition: color 0.2s, background 0.2s;
-  position: relative;
-}
-.cast-btn:hover { color: var(--text-base); background: rgba(255,255,255,0.08); }
-.cast-btn.casting { color: var(--accent); }
-.cast-btn.casting svg { animation: castPulse 2s ease-in-out infinite; }
-@keyframes castPulse {
-  0%,100% { opacity: 1; }
-  50% { opacity: 0.5; }
-}
-.cast-label {
-  position: absolute;
-  bottom: -22px; left: 50%; transform: translateX(-50%);
-  background: rgba(0,0,0,0.9);
-  color: #fff; font-size: 11px; font-weight: 600;
-  padding: 3px 8px; border-radius: 4px;
-  white-space: nowrap; pointer-events: none;
-  opacity: 0; transition: opacity 0.2s;
-}
-.cast-btn:hover .cast-label { opacity: 1; }
+
 
 /* =============================================
    SIDEBAR
@@ -800,27 +774,7 @@ input[type=range]:hover::-moz-range-thumb { opacity: 1; }
 .np-panel-vol { padding: 0 24px 20px; flex-shrink: 0; }
 .np-panel-vol .volume-ctrl { min-width: unset; width: 100%; }
 
-/* Cast status in NP panel */
-.np-cast-row {
-  padding: 8px 24px 4px;
-  display: flex; align-items: center; gap: 10px;
-  flex-shrink: 0;
-}
-.np-cast-status {
-  font-size: 12px; color: var(--text-subdued);
-  display: flex; align-items: center; gap: 6px;
-}
-.np-cast-status.active { color: var(--accent); }
-.np-cast-btn {
-  background: rgba(255,255,255,0.08); border: none; cursor: pointer;
-  color: var(--text-subdued); border-radius: 20px;
-  padding: 6px 14px; font-size: 12px; font-weight: 700;
-  font-family: var(--font);
-  display: flex; align-items: center; gap: 6px;
-  transition: background 0.2s, color 0.2s;
-}
-.np-cast-btn:hover { background: rgba(255,255,255,0.16); color: var(--text-base); }
-.np-cast-btn.casting { background: rgba(29,185,84,0.15); color: var(--accent); border: 1px solid rgba(29,185,84,0.3); }
+
 
 /* =============================================
    MOBILE FULLSCREEN PLAYER
@@ -964,6 +918,75 @@ input[type=range]:hover::-moz-range-thumb { opacity: 1; }
   .home-np-banner { margin: 16px 16px 0; }
   #mobile-player-fullscreen { display: flex; }
   .player-now-playing-tap { cursor: pointer; }
+}
+
+/* =============================================
+   LYRICS PANEL
+============================================= */
+.np-lyrics-section {
+  padding: 0 24px 16px;
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
+}
+.np-lyrics-section::-webkit-scrollbar { width: 4px; }
+.np-lyrics-section::-webkit-scrollbar-thumb { background: var(--scrollbar); border-radius: 2px; }
+
+.np-lyrics-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 12px;
+  flex-shrink: 0;
+}
+.np-lyrics-title {
+  font-size: 11px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.1em; color: var(--text-subdued);
+}
+.btn-lyrics-mic {
+  display: flex; align-items: center; gap: 6px;
+  background: rgba(255,255,255,0.08); border: none; cursor: pointer;
+  color: var(--text-subdued); border-radius: 20px;
+  padding: 6px 14px; font-size: 12px; font-weight: 700;
+  font-family: var(--font);
+  transition: background 0.2s, color 0.2s;
+}
+.btn-lyrics-mic:hover { background: rgba(255,255,255,0.16); color: var(--text-base); }
+.btn-lyrics-mic.listening {
+  background: rgba(29,185,84,0.2); color: var(--accent);
+  border: 1px solid rgba(29,185,84,0.4);
+  animation: micPulse 1.4s ease-in-out infinite;
+}
+.btn-lyrics-mic.loading {
+  background: rgba(29,185,84,0.1); color: var(--accent);
+  pointer-events: none;
+}
+@keyframes micPulse {
+  0%,100% { box-shadow: 0 0 0 0 rgba(29,185,84,0.4); }
+  50% { box-shadow: 0 0 0 6px rgba(29,185,84,0); }
+}
+.lyrics-content {
+  font-size: 13px; line-height: 1.85;
+  color: var(--text-subdued);
+  white-space: pre-line;
+}
+.lyrics-content.has-lyrics { color: var(--text-base); }
+.lyrics-empty {
+  text-align: center; padding: 24px 0;
+  color: var(--text-subdued); font-size: 13px;
+}
+.lyrics-spinner {
+  display: flex; align-items: center; justify-content: center;
+  gap: 8px; padding: 20px 0; color: var(--text-subdued); font-size: 13px;
+}
+.lyrics-spinner-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--accent);
+  animation: lyricsSpinnerBounce 1.2s ease-in-out infinite;
+}
+.lyrics-spinner-dot:nth-child(2) { animation-delay: 0.15s; }
+.lyrics-spinner-dot:nth-child(3) { animation-delay: 0.3s; }
+@keyframes lyricsSpinnerBounce {
+  0%,80%,100% { transform: scale(0.5); opacity: 0.4; }
+  40% { transform: scale(1); opacity: 1; }
 }
 </style>
 </head>
