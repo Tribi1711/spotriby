@@ -69,6 +69,26 @@
       "duration": "2:26",
       "mp3": "songs/cancion3.mp3",
       "cover": "songs/cover3.jpg"
+    },
+    {
+      "id": 8,
+      "title": "AFTER 3AM",
+      "artist": "Tribi",
+      "album": "NOCHE SIN REGLAS",
+      "year": 2026,
+      "duration": "2:35",
+      "mp3": "songs/cancion8.mp3",
+      "cover": "songs/cover8.jpg"
+    },
+    {
+      "id": 9,
+      "title": "Sin Permiso",
+      "artist": "Tribi",
+      "album": "NOCHE SIN REGLAS",
+      "year": 2026,
+      "duration": "2:14",
+      "mp3": "songs/cancion9.mp3",
+      "cover": "songs/cover9.jpg"
     }
   ]
 }
